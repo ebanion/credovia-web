@@ -1,8 +1,12 @@
+'use client'
+
 import Image from "next/image"
 import Link from "next/link"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { MortgageWizardModal } from "@/components/MortgageWizardModal"
 import {
   Home,
   Calculator,
@@ -18,6 +22,7 @@ import {
 } from "lucide-react"
 
 export default function MejotecaLanding() {
+  const [isModalOpen, setIsModalOpen] = useState(false)
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -55,15 +60,14 @@ export default function MejotecaLanding() {
             <p className="mb-8 opacity-90 tracking-normal text-2xl font-light">
               Combinas la experiencia de más de 10 años con la Inteligencia artificial para encontrar la mejor opción.
             </p>
-            <Link href="/simulador" passHref>
-              <Button
-                variant="destructive"
-                size="lg"
-                className="hover:bg-blue-700 px-8 py-3 text-black bg-white font-extrabold"
-              >
-                Simula tu hipoteca
-              </Button>
-            </Link>
+            <Button
+              variant="destructive"
+              size="lg"
+              className="hover:bg-blue-700 px-8 py-3 text-black bg-white font-extrabold"
+              onClick={() => setIsModalOpen(true)}
+            >
+              Simula tu hipoteca
+            </Button>
           </div>
         </div>
       </section>
@@ -199,6 +203,12 @@ export default function MejotecaLanding() {
           <MessageCircle className="w-6 h-6" />
         </Button>
       </div>
+
+      {/* Mortgage Wizard Modal */}
+      <MortgageWizardModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   )
 }
