@@ -28,10 +28,10 @@ export default function MejotecaLanding() {
               <span className="text-2xl font-bold text-gray-900 font-sans px-0 shadow-none">Credovia</span>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link href="#" className="text-gray-700 hover:text-gray-900 text-center">Hipotecas</Link>
-              <Link href="#" className="text-gray-700 hover:text-gray-900">Préstamos</Link>
+              <Link href="/hipotecas" className="text-gray-700 hover:text-gray-900 text-center">Hipotecas</Link>
+              <Link href="/prestamos" className="text-gray-700 hover:text-gray-900">Préstamos</Link>
               <Link href="#" className="text-gray-700 hover:text-gray-900">Blog</Link>
-              <Link href="#" className="text-gray-700 hover:text-gray-900">Contacto</Link>
+              <Link href="#contacto" className="text-gray-700 hover:text-gray-900">Contacto</Link>
             </nav>
           </div>
         </div>
@@ -144,7 +144,7 @@ export default function MejotecaLanding() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-16 bg-white">
+      <section id="contacto" className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4 text-black">¿Quieres contactar con nosotros?</h2>
