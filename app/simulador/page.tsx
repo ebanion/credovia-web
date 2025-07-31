@@ -1,92 +1,65 @@
-'use client';
+// app/simulador/page.tsx
+"use client"
 
-import { useForm } from 'react-hook-form';
+import { useState } from "react"
 
 export default function SimuladorPage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const [cantidad, setCantidad] = useState("")
+  const [plazo, setPlazo] = useState("")
+  const [resultado, setResultado] = useState<number | null>(null)
 
-  const onSubmit = (data: any) => {
-    console.log('Formulario enviado:', data);
-    alert(`Datos recibidos:\n${JSON.stringify(data, null, 2)}`);
-  };
+  const calcularSimulacion = () => {
+    const c = parseFloat(cantidad)
+    const p = parseInt(plazo)
+    if (isNaN(c) || isNaN(p) || c <= 0 || p <= 0) return
+    const interes = 0.03
+    const cuota = (c * interes * (1 + interes) ** p) / ((1 + interes) ** p - 1)
+    setResultado(cuota)
+  }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4">
-      <h1 className="text-3xl font-bold mb-6">Simulador de Financiación</h1>
+    <div className="max-w-xl mx-auto py-10 px-4">
+      <h1 className="text-3xl font-bold mb-6 text-center text-orange-600">
+        Simula tu Hipoteca
+      </h1>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-md"
+      <div className="mb-4">
+        <label className="block font-medium mb-1">Cantidad solicitada (€):</label>
+        <input
+          type="number"
+          value={cantidad}
+          onChange={(e) => setCantidad(e.target.value)}
+          placeholder="Ej: 150000"
+          className="border border-gray-300 rounded p-2 w-full"
+        />
+      </div>
+
+      <div className="mb-4">
+        <label className="block font-medium mb-1">Plazo (meses):</label>
+        <input
+          type="number"
+          value={plazo}
+          onChange={(e) => setPlazo(e.target.value)}
+          placeholder="Ej: 300"
+          className="border border-gray-300 rounded p-2 w-full"
+        />
+      </div>
+
+      <button
+        onClick={calcularSimulacion}
+        className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2 rounded"
       >
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Nombre
-          </label>
-          <input
-            {...register('nombre', { required: 'El nombre es obligatorio' })}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-            placeholder="Introduce tu nombre"
-          />
-          {errors.nombre && (
-            <p className="text-red-500 text-xs italic">
-              {errors.nombre.message}
-            </p>
-          )}
-        </div>
+        Calcular cuota
+      </button>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Importe a financiar (€)
-          </label>
-          <input
-            type="number"
-            {...register('importe', {
-              required: 'Este campo es obligatorio',
-              min: { value: 1000, message: 'Mínimo 1000 €' },
-            })}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-            placeholder="Ej. 10000"
-          />
-          {errors.importe && (
-            <p className="text-red-500 text-xs italic">
-              {errors.importe.message}
-            </p>
-          )}
+      {resultado !== null && (
+        <div className="mt-6 text-lg text-center">
+          Tu cuota mensual estimada sería de:<br />
+          <span className="text-2xl font-bold text-green-600">
+            {resultado.toFixed(2)} €
+          </span>
         </div>
-
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            Plazo (meses)
-          </label>
-          <input
-            type="number"
-            {...register('plazo', {
-              required: 'Indica el número de meses',
-              min: { value: 6, message: 'Mínimo 6 meses' },
-            })}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-            placeholder="Ej. 36"
-          />
-          {errors.plazo && (
-            <p className="text-red-500 text-xs italic">
-              {errors.plazo.message}
-            </p>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between">
-          <button
-            type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Calcular
-          </button>
-        </div>
-      </form>
-    </main>
-  );
+      )}
+    </div>
+  )
 }
