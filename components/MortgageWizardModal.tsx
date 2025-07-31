@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Step1SearchStatus } from './wizard-steps/Step1SearchStatus'
 import { Step2MortgageDetails } from './wizard-steps/Step2MortgageDetails'
 import { Step3Savings } from './wizard-steps/Step3Savings'
@@ -149,19 +149,9 @@ export function MortgageWizardModal({ isOpen, onClose }: MortgageWizardModalProp
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-2xl font-bold text-gray-900">
-              Simulador de Hipoteca
-            </DialogTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-6 w-6 rounded-full"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle className="text-2xl font-bold text-gray-900">
+            Simulador de Hipoteca
+          </DialogTitle>
         </DialogHeader>
 
         {/* Progress Bar */}

@@ -33,10 +33,10 @@ export default function MejotecaLanding() {
               <span className="text-2xl font-bold text-gray-900 font-sans px-0 shadow-none">Credovia</span>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <Link href="#" className="text-gray-700 hover:text-gray-900 text-center">Hipotecas</Link>
-              <Link href="#" className="text-gray-700 hover:text-gray-900">Préstamos</Link>
-              <Link href="#" className="text-gray-700 hover:text-gray-900">Blog</Link>
-              <Link href="#" className="text-gray-700 hover:text-gray-900">Contacto</Link>
+              <Link href="/hipotecas" className="text-gray-700 hover:text-gray-900 text-center">Hipotecas</Link>
+              <Link href="/prestamos" className="text-gray-700 hover:text-gray-900">Préstamos</Link>
+              <Link href="/blog" className="text-gray-700 hover:text-gray-900">Blog</Link>
+              <Link href="#contacto" className="text-gray-700 hover:text-gray-900">Contacto</Link>
             </nav>
           </div>
         </div>
