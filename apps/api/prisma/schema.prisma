@@ -1,0 +1,434 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// === CORE ENTITIES ===
+
+model Vivienda {
+  id                String   @id @default(cuid())
+  ulid              String   @unique
+  nombre            String
+  direccion         String
+  ciudad            String
+  codigoPostal      String
+  provincia         String
+  licenciaTuristica String?
+  capacidadMaxima   Int
+  habitaciones      Int
+  banos             Int
+  propietarioId     String
+  activa            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relaciones
+  propietario    Propietario        @relation(fields: [propietarioId], references: [id])
+  unidades       Unidad[]
+  reservas       Reserva[]
+  tareas         Tarea[]
+  ingresos       Ingreso[]
+  gastos         Gasto[]
+  liquidaciones  LiquidacionPropietario[]
+
+  @@map("viviendas")
+}
+
+model Unidad {
+  id          String   @id @default(cuid())
+  ulid        String   @unique
+  viviendaId  String
+  nombre      String   // ej: "Habitación 1", "Apartamento completo"
+  descripcion String?
+  activa      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  vivienda Vivienda  @relation(fields: [viviendaId], references: [id])
+  reservas Reserva[]
+
+  @@map("unidades")
+}
+
+model Propietario {
+  id               String   @id @default(cuid())
+  ulid             String   @unique
+  nombre           String
+  apellidos        String
+  email            String   @unique
+  telefono         String?
+  nif              String   @unique
+  direccion        String?
+  tipoContribuyente String  @default("PERSONA_FISICA") // PERSONA_FISICA, EMPRESA
+  activo           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relaciones
+  viviendas     Vivienda[]
+  liquidaciones LiquidacionPropietario[]
+
+  @@map("propietarios")
+}
+
+// === RESERVAS Y HUÉSPEDES ===
+
+model Reserva {
+  id               String            @id @default(cuid())
+  ulid             String            @unique
+  externalId       String?           @unique // Para idempotencia
+  viviendaId       String
+  unidadId         String?
+  fechaEntrada     DateTime
+  fechaSalida      DateTime
+  numeroHuespedes  Int
+  precioTotal      Decimal           @db.Decimal(10, 2)
+  moneda           String            @default("EUR")
+  canal            String            // DIRECTO, AIRBNB, BOOKING, etc.
+  estado           EstadoReserva     @default(CREADA)
+  estadoOperacion  EstadoOperacion   @default(RESERVA_CREADA)
+  notas            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  // Relaciones
+  vivienda         Vivienda          @relation(fields: [viviendaId], references: [id])
+  unidad           Unidad?           @relation(fields: [unidadId], references: [id])
+  huespedes        Huesped[]
+  partesPoliciales PartePolicial[]
+  ingresos         Ingreso[]
+  movimientosFianza MovimientoFianza[]
+  tareas           Tarea[]
+  eventos          EventoEnvio[]
+
+  @@map("reservas")
+}
+
+model Huesped {
+  id              String    @id @default(cuid())
+  ulid            String    @unique
+  reservaId       String
+  nombre          String
+  apellidos       String
+  tipoDocumento   String    // DNI, NIE, PASAPORTE
+  numeroDocumento String
+  fechaNacimiento DateTime?
+  nacionalidad    String?
+  email           String?
+  telefono        String?
+  esTitular       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relaciones
+  reserva Reserva @relation(fields: [reservaId], references: [id])
+
+  @@unique([reservaId, numeroDocumento])
+  @@map("huespedes")
+}
+
+// === CUMPLIMIENTO LEGAL ===
+
+model PartePolicial {
+  id                String           @id @default(cuid())
+  ulid              String           @unique
+  reservaId         String
+  fechaEnvio        DateTime?
+  estado            EstadoPartePolicial @default(PENDIENTE)
+  numeroReferencia  String?          // Número de referencia del SES
+  motivoRechazo     String?
+  intentos          Int              @default(0)
+  maxIntentos       Int              @default(3)
+  proximoIntento    DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  // Relaciones
+  reserva Reserva       @relation(fields: [reservaId], references: [id])
+  envios  EnvioOficial[]
+
+  @@map("partes_policiales")
+}
+
+model EnvioOficial {
+  id              String      @id @default(cuid())
+  ulid            String      @unique
+  parteId         String
+  tipo            TipoEnvio   @default(SES_HOSPEDAJES)
+  fechaEnvio      DateTime
+  estado          EstadoEnvio @default(ENVIADO)
+  codigoRespuesta String?
+  mensajeRespuesta String?
+  hashSolicitud   String      // SHA-256 de la solicitud
+  hashRespuesta   String?     // SHA-256 de la respuesta
+  createdAt       DateTime    @default(now())
+
+  // Relaciones
+  parte   PartePolicial @relation(fields: [parteId], references: [id])
+  eventos EventoEnvio[]
+
+  @@map("envios_oficiales")
+}
+
+model EventoEnvio {
+  id          String      @id @default(cuid())
+  ulid        String      @unique
+  reservaId   String?
+  envioId     String?
+  tipo        TipoEvento
+  descripcion String
+  metadata    Json?       // Metadatos sin PII
+  timestamp   DateTime    @default(now())
+
+  // Relaciones
+  reserva Reserva?      @relation(fields: [reservaId], references: [id])
+  envio   EnvioOficial? @relation(fields: [envioId], references: [id])
+
+  @@map("eventos_envio")
+}
+
+// === FINANZAS ===
+
+model Ingreso {
+  id          String      @id @default(cuid())
+  ulid        String      @unique
+  viviendaId  String
+  reservaId   String?
+  concepto    String
+  importe     Decimal     @db.Decimal(10, 2)
+  moneda      String      @default("EUR")
+  fecha       DateTime
+  canal       String?     // STRIPE, PAYPAL, TRANSFERENCIA, etc.
+  referencia  String?     // ID de transacción externa
+  estado      EstadoPago  @default(PENDIENTE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relaciones
+  vivienda Vivienda @relation(fields: [viviendaId], references: [id])
+  reserva  Reserva? @relation(fields: [reservaId], references: [id])
+
+  @@map("ingresos")
+}
+
+model Gasto {
+  id          String   @id @default(cuid())
+  ulid        String   @unique
+  viviendaId  String
+  concepto    String
+  importe     Decimal  @db.Decimal(10, 2)
+  moneda      String   @default("EUR")
+  fecha       DateTime
+  categoria   String   // LIMPIEZA, MANTENIMIENTO, SUMINISTROS, etc.
+  proveedor   String?
+  referencia  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  vivienda Vivienda @relation(fields: [viviendaId], references: [id])
+
+  @@map("gastos")
+}
+
+model MovimientoFianza {
+  id          String           @id @default(cuid())
+  ulid        String           @unique
+  reservaId   String
+  tipo        TipoMovimientoFianza
+  importe     Decimal          @db.Decimal(10, 2)
+  moneda      String           @default("EUR")
+  estado      EstadoFianza     @default(RETENIDA)
+  fecha       DateTime
+  motivo      String?
+  referencia  String?          // ID de transacción externa
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Relaciones
+  reserva Reserva @relation(fields: [reservaId], references: [id])
+
+  @@map("movimientos_fianza")
+}
+
+model LiquidacionPropietario {
+  id            String   @id @default(cuid())
+  ulid          String   @unique
+  propietarioId String
+  viviendaId    String
+  periodo       String   // "2024-Q1", "2024-01", etc.
+  tipoLiquidacion String @default("MENSUAL") // MENSUAL, TRIMESTRAL
+  totalIngresos Decimal  @db.Decimal(10, 2)
+  totalGastos   Decimal  @db.Decimal(10, 2)
+  comision      Decimal  @db.Decimal(10, 2)
+  netoPropietario Decimal @db.Decimal(10, 2)
+  estado        String   @default("PENDIENTE") // PENDIENTE, PAGADO
+  fechaGeneracion DateTime @default(now())
+  fechaPago     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relaciones
+  propietario Propietario @relation(fields: [propietarioId], references: [id])
+  vivienda    Vivienda    @relation(fields: [viviendaId], references: [id])
+
+  @@unique([propietarioId, viviendaId, periodo])
+  @@map("liquidaciones_propietario")
+}
+
+// === OPERACIONES ===
+
+model Tarea {
+  id          String      @id @default(cuid())
+  ulid        String      @unique
+  viviendaId  String
+  reservaId   String?
+  tipo        TipoTarea
+  titulo      String
+  descripcion String?
+  estado      EstadoTarea @default(PENDIENTE)
+  prioridad   Prioridad   @default(MEDIA)
+  fechaLimite DateTime?
+  fechaCompletada DateTime?
+  asignadoA   String?     // Email o ID del responsable
+  notas       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relaciones
+  vivienda Vivienda @relation(fields: [viviendaId], references: [id])
+  reserva  Reserva? @relation(fields: [reservaId], references: [id])
+
+  @@map("tareas")
+}
+
+// === USUARIOS Y AUTENTICACIÓN ===
+
+model Usuario {
+  id        String   @id @default(cuid())
+  ulid      String   @unique
+  email     String   @unique
+  password  String   // Hash bcrypt
+  nombre    String
+  apellidos String?
+  rol       RolUsuario @default(PROPIETARIO)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("usuarios")
+}
+
+// === ENUMS ===
+
+enum EstadoReserva {
+  CREADA
+  CONFIRMADA
+  CANCELADA
+  COMPLETADA
+}
+
+enum EstadoOperacion {
+  RESERVA_CREADA
+  VENTANA_PROGRAMADA
+  PIDE_REGISTRO
+  DATOS_COMPLETOS
+  SES_PROGRAMADO
+  SES_ENVIADO
+  INSTRUCCIONES_ENVIADAS
+  CODIGO_ACTIVADO
+  CHECKIN_HECHO
+  CHECKOUT_HECHO
+}
+
+enum EstadoPartePolicial {
+  PENDIENTE
+  ENVIADO
+  ACEPTADO
+  RECHAZADO
+  ERROR
+}
+
+enum EstadoEnvio {
+  ENVIADO
+  ACEPTADO
+  RECHAZADO
+  ERROR
+}
+
+enum TipoEnvio {
+  SES_HOSPEDAJES
+  OTRO
+}
+
+enum TipoEvento {
+  RESERVA_CREADA
+  T_MINUS_10
+  T_MINUS_7
+  T_MINUS_48
+  T_MINUS_24
+  T_MINUS_2
+  LLEGADA
+  SALIDA
+  SES_OK
+  SES_FAIL
+  FIANZA_OK
+  CODIGO_BLOQUEADO
+}
+
+enum EstadoPago {
+  PENDIENTE
+  COMPLETADO
+  FALLIDO
+  REEMBOLSADO
+}
+
+enum TipoMovimientoFianza {
+  RETENCION
+  DEVOLUCION
+  DESCUENTO
+}
+
+enum EstadoFianza {
+  RETENIDA
+  DEVUELTA
+  DESCONTADA
+}
+
+enum TipoTarea {
+  LIMPIEZA
+  MANTENIMIENTO
+  CHECK_IN
+  CHECK_OUT
+  INSPECCION
+  OTRO
+}
+
+enum EstadoTarea {
+  PENDIENTE
+  EN_PROGRESO
+  COMPLETADA
+  CANCELADA
+}
+
+enum Prioridad {
+  BAJA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+enum RolUsuario {
+  ADMIN
+  PROPIETARIO
+  HOUSEKEEPING
+  SOPORTE
+}
