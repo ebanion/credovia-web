@@ -29,7 +29,6 @@ export default function MejotecaLanding() {
             </div>
             <nav className="hidden md:flex space-x-8">
               <Link href="#" className="text-gray-700 hover:text-gray-900 text-center">Hipotecas</Link>
-              <Link href="#" className="text-gray-700 hover:text-gray-900">Préstamos</Link>
               <Link href="#" className="text-gray-700 hover:text-gray-900">Blog</Link>
               <Link href="#" className="text-gray-700 hover:text-gray-900">Contacto</Link>
             </nav>
