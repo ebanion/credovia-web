@@ -26,7 +26,7 @@ export default function LandingPage() {
       {/* 1. Header Simple */}
       <header className="bg-white py-6 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 flex justify-center">
-          <span className="text-4xl font-extrabold text-primary tracking-tight">Credovia</span>
+          <Image src="/logo-credovia.png" alt="Credovia Logo" width={200} height={50} className="h-12 w-auto" />
         </div>
       </header>
 
@@ -50,12 +50,12 @@ export default function LandingPage() {
             <div className="hidden lg:block w-64 pt-12 space-y-4 opacity-80">
                <div className="rotate-3 p-2 bg-white shadow-lg rounded-xl border border-slate-100">
                   <div className="h-40 bg-slate-100 rounded-lg relative overflow-hidden">
-                    <Image src="/placeholder.svg?height=160&width=240" alt="House" width={240} height={160} className="object-cover" />
+                    <Image src="/hero-house.png" alt="House" width={240} height={160} className="object-cover" />
                   </div>
                </div>
                <div className="-rotate-6 p-2 bg-white shadow-lg rounded-xl border border-slate-100 translate-x-8">
                   <div className="h-32 bg-slate-100 rounded-lg relative overflow-hidden">
-                    <Image src="/placeholder.svg?height=128&width=240" alt="Keys" width={240} height={128} className="object-cover" />
+                    <Image src="/hero-keys.png" alt="Keys" width={240} height={128} className="object-cover" />
                   </div>
                </div>
             </div>
@@ -69,12 +69,12 @@ export default function LandingPage() {
             <div className="hidden lg:block w-64 pt-8 space-y-6 opacity-80">
                <div className="-rotate-3 p-2 bg-white shadow-lg rounded-xl border border-slate-100">
                   <div className="h-40 bg-slate-100 rounded-lg relative overflow-hidden">
-                    <Image src="/placeholder.svg?height=160&width=240" alt="Family" width={240} height={160} className="object-cover" />
+                    <Image src="/hero-family.png" alt="Family" width={240} height={160} className="object-cover" />
                   </div>
                </div>
                <div className="rotate-6 p-2 bg-white shadow-lg rounded-xl border border-slate-100 -translate-x-4">
                   <div className="h-32 bg-slate-100 rounded-lg relative overflow-hidden">
-                    <Image src="/placeholder.svg?height=128&width=240" alt="Moving" width={240} height={128} className="object-cover" />
+                    <Image src="/hero-moving.png" alt="Moving" width={240} height={128} className="object-cover" />
                   </div>
                </div>
             </div>
