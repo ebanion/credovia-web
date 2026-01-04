@@ -45,9 +45,9 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="flex justify-center items-start gap-8 relative">
+          <div className="flex justify-center items-center gap-8 relative">
             {/* Collage Left (Hidden on mobile) */}
-            <div className="hidden lg:block w-64 pt-12 space-y-4 opacity-80">
+            <div className="hidden lg:block w-64 space-y-4 opacity-80">
                <div className="rotate-3 p-2 bg-white shadow-lg rounded-xl border border-slate-100">
                   <div className="h-40 bg-slate-100 rounded-lg relative overflow-hidden">
                     <Image src="/hero-house.png" alt="House" width={240} height={160} className="object-cover" />
@@ -61,12 +61,12 @@ export default function LandingPage() {
             </div>
 
             {/* Central Form */}
-            <div className="w-full max-w-2xl relative z-20 -mt-4">
+            <div className="w-full max-w-2xl relative z-20">
               <MortgageRequestForm />
             </div>
 
             {/* Collage Right (Hidden on mobile) */}
-            <div className="hidden lg:block w-64 pt-8 space-y-6 opacity-80">
+            <div className="hidden lg:block w-64 space-y-6 opacity-80">
                <div className="-rotate-3 p-2 bg-white shadow-lg rounded-xl border border-slate-100">
                   <div className="h-40 bg-slate-100 rounded-lg relative overflow-hidden">
                     <Image src="/hero-family.png" alt="Family" width={240} height={160} className="object-cover" />
