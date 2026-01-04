@@ -2,100 +2,104 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { CheckCircle2, ArrowRight } from "lucide-react"
+import { CheckCircle2, Home, Building, TrendingUp, RefreshCw, ArrowLeft } from "lucide-react"
 
 export default function MortgageRequestForm() {
   const [step, setStep] = useState(1)
+  const [purpose, setPurpose] = useState("")
   
   const handleNext = () => setStep(step + 1)
+  const handleBack = () => setStep(Math.max(1, step - 1))
+  
+  const handlePurposeSelect = (value: string) => {
+    setPurpose(value)
+    handleNext()
+  }
+
+  const steps = [
+    { title: "Finalidad", description: "¿Para qué quieres la hipoteca?" },
+    { title: "Vivienda", description: "Datos del inmueble" },
+    { title: "Económico", description: "Situación financiera" },
+    { title: "Contacto", description: "Tus datos" },
+  ]
+  
+  // Progress calculation
+  const progress = (step / steps.length) * 100
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
-      <div className="mb-8 text-center">
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Solicita tu nueva hipoteca</h2>
-        <p className="text-slate-600">Completa los pasos para recibir las mejores ofertas personalizadas.</p>
+    <div className="max-w-4xl mx-auto py-8 px-4">
+      {/* Step Indicator */}
+      <div className="mb-12">
+        <div className="flex justify-between items-center mb-4 text-sm font-medium text-slate-500">
+           <span>Paso {step} de {steps.length}</span>
+           <span>{Math.round(progress)}% completado</span>
+        </div>
+        <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-emerald-500 transition-all duration-500 ease-out rounded-full"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </div>
 
-      <div className="flex justify-between items-center mb-8 px-8">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-center">
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-              step >= i ? "bg-emerald-600 text-white" : "bg-slate-200 text-slate-500"
-            }`}>
-              {step > i ? <CheckCircle2 className="w-5 h-5" /> : i}
-            </div>
-            {i < 3 && (
-              <div className={`h-1 w-24 mx-2 ${
-                step > i ? "bg-emerald-600" : "bg-slate-200"
-              }`} />
-            )}
+      <div className="max-w-2xl mx-auto">
+        <div className="text-center mb-10">
+          <h2 className="text-3xl font-bold text-slate-900 mb-3">{steps[step-1].description}</h2>
+          <p className="text-slate-500">Te ayudamos a encontrar la mejor opción del mercado.</p>
+        </div>
+
+        {/* Step 1: Purpose */}
+        {step === 1 && (
+          <div className="grid md:grid-cols-2 gap-4">
+            <PurposeCard 
+              icon={<Home className="w-8 h-8 text-emerald-600" />}
+              title="Comprar vivienda habitual"
+              onClick={() => handlePurposeSelect("first_home")}
+            />
+            <PurposeCard 
+              icon={<Building className="w-8 h-8 text-blue-600" />}
+              title="Segunda residencia"
+              onClick={() => handlePurposeSelect("second_home")}
+            />
+            <PurposeCard 
+              icon={<TrendingUp className="w-8 h-8 text-amber-500" />}
+              title="Inversión"
+              onClick={() => handlePurposeSelect("investment")}
+            />
+            <PurposeCard 
+              icon={<RefreshCw className="w-8 h-8 text-purple-600" />}
+              title="Mejorar mi hipoteca"
+              onClick={() => handlePurposeSelect("improvement")}
+            />
           </div>
-        ))}
-      </div>
+        )}
 
-      <Card className="shadow-lg border-slate-100">
-        <CardHeader>
-          <CardTitle>
-            {step === 1 && "Finalidad de la hipoteca"}
-            {step === 2 && "Datos económicos"}
-            {step === 3 && "Datos de contacto"}
-          </CardTitle>
-          <CardDescription>
-            {step === 1 && "¿Para qué necesitas el préstamo?"}
-            {step === 2 && "Cuéntanos sobre la vivienda"}
-            {step === 3 && "Para enviarte las ofertas"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {step === 1 && (
-            <div className="space-y-4">
-              <RadioGroup defaultValue="main-home">
-                <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-slate-50 cursor-pointer">
-                  <RadioGroupItem value="main-home" id="r1" />
-                  <Label htmlFor="r1" className="cursor-pointer flex-1">Comprar vivienda habitual</Label>
-                </div>
-                <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-slate-50 cursor-pointer">
-                  <RadioGroupItem value="second-home" id="r2" />
-                  <Label htmlFor="r2" className="cursor-pointer flex-1">Segunda residencia</Label>
-                </div>
-                <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-slate-50 cursor-pointer">
-                  <RadioGroupItem value="investment" id="r3" />
-                  <Label htmlFor="r3" className="cursor-pointer flex-1">Inversión</Label>
-                </div>
-                <div className="flex items-center space-x-2 border p-4 rounded-lg hover:bg-slate-50 cursor-pointer">
-                  <RadioGroupItem value="improvement" id="r4" />
-                  <Label htmlFor="r4" className="cursor-pointer flex-1">Mejorar mi hipoteca actual</Label>
-                </div>
-              </RadioGroup>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Precio de la vivienda</Label>
-                <div className="relative">
-                  <Input type="number" placeholder="Ej: 250000" className="pl-8" />
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">€</span>
+        {/* Step 2: Property Details */}
+        {step === 2 && (
+          <Card className="border-0 shadow-lg p-6">
+            <CardContent className="space-y-6 pt-6">
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">¿Has encontrado ya la casa?</Label>
+                <div className="grid grid-cols-2 gap-4">
+                  <Button variant="outline" className="h-14 text-lg hover:border-emerald-500 hover:text-emerald-600">Sí</Button>
+                  <Button variant="outline" className="h-14 text-lg hover:border-emerald-500 hover:text-emerald-600">No, aún busco</Button>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>Ahorros aportados</Label>
-                <div className="relative">
-                  <Input type="number" placeholder="Ej: 50000" className="pl-8" />
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">€</span>
-                </div>
+
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Precio de la vivienda (€)</Label>
+                <Input type="number" placeholder="Ej: 250000" className="h-14 text-lg px-4" />
               </div>
-              <div className="space-y-2">
-                <Label>Provincia</Label>
+
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Ubicación</Label>
                 <Select>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona..." />
+                  <SelectTrigger className="h-14 text-lg px-4">
+                    <SelectValue placeholder="Selecciona provincia" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="madrid">Madrid</SelectItem>
@@ -105,51 +109,117 @@ export default function MortgageRequestForm() {
                   </SelectContent>
                 </Select>
               </div>
+            </CardContent>
+            <div className="p-6 pt-0 flex justify-between">
+              <Button variant="ghost" onClick={handleBack} className="text-slate-500">
+                <ArrowLeft className="mr-2 w-4 h-4" /> Atrás
+              </Button>
+              <Button onClick={handleNext} className="bg-emerald-600 hover:bg-emerald-700 h-12 px-8 text-lg">
+                Continuar
+              </Button>
             </div>
-          )}
+          </Card>
+        )}
 
-          {step === 3 && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Nombre</Label>
-                  <Input placeholder="Tu nombre" />
+        {/* Step 3: Financials */}
+        {step === 3 && (
+          <Card className="border-0 shadow-lg p-6">
+            <CardContent className="space-y-6 pt-6">
+               <div className="space-y-3">
+                <Label className="text-base font-semibold">Ingresos mensuales netos (Hogar)</Label>
+                <Input type="number" placeholder="Ej: 3000" className="h-14 text-lg px-4" />
+                <p className="text-sm text-slate-500">Suma de las nóminas de todos los titulares</p>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Ahorros disponibles</Label>
+                <Input type="number" placeholder="Ej: 60000" className="h-14 text-lg px-4" />
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Situación laboral principal</Label>
+                <Select>
+                  <SelectTrigger className="h-14 text-lg px-4">
+                    <SelectValue placeholder="Selecciona..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="indefinido">Indefinido</SelectItem>
+                    <SelectItem value="temporal">Temporal</SelectItem>
+                    <SelectItem value="autonomo">Autónomo</SelectItem>
+                    <SelectItem value="funcionario">Funcionario</SelectItem>
+                    <SelectItem value="pensionista">Pensionista</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+            <div className="p-6 pt-0 flex justify-between">
+              <Button variant="ghost" onClick={handleBack} className="text-slate-500">
+                <ArrowLeft className="mr-2 w-4 h-4" /> Atrás
+              </Button>
+              <Button onClick={handleNext} className="bg-emerald-600 hover:bg-emerald-700 h-12 px-8 text-lg">
+                Continuar
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* Step 4: Contact */}
+        {step === 4 && (
+          <Card className="border-0 shadow-lg p-6">
+            <CardContent className="space-y-6 pt-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <Label className="text-base font-semibold">Nombre</Label>
+                  <Input placeholder="Tu nombre" className="h-14 text-lg px-4" />
                 </div>
-                <div className="space-y-2">
-                  <Label>Apellidos</Label>
-                  <Input placeholder="Tus apellidos" />
+                <div className="space-y-3">
+                  <Label className="text-base font-semibold">Apellidos</Label>
+                  <Input placeholder="Tus apellidos" className="h-14 text-lg px-4" />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input type="email" placeholder="ejemplo@email.com" />
+
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Email</Label>
+                <Input type="email" placeholder="tu@email.com" className="h-14 text-lg px-4" />
               </div>
-              <div className="space-y-2">
-                <Label>Teléfono</Label>
-                <Input type="tel" placeholder="600 000 000" />
+
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Teléfono</Label>
+                <Input type="tel" placeholder="600 123 456" className="h-14 text-lg px-4" />
               </div>
-              <div className="flex items-start space-x-2 mt-4">
-                <input type="checkbox" className="mt-1" id="privacy" />
-                <Label htmlFor="privacy" className="text-sm text-slate-500 font-normal">
-                  Acepto la política de privacidad y autorizo a Credovia a contactarme para informarme sobre ofertas hipotecarias.
+
+              <div className="flex items-start space-x-3 p-4 bg-slate-50 rounded-lg">
+                <input type="checkbox" className="mt-1 w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500" id="privacy" />
+                <Label htmlFor="privacy" className="text-sm text-slate-600 font-normal leading-relaxed cursor-pointer">
+                  He leído y acepto la <span className="underline decoration-dotted">política de privacidad</span>. Autorizo a Credovia a contactarme para informarme sobre ofertas hipotecarias adaptadas a mi perfil.
                 </Label>
               </div>
+            </CardContent>
+            <div className="p-6 pt-0 flex justify-between">
+              <Button variant="ghost" onClick={handleBack} className="text-slate-500">
+                <ArrowLeft className="mr-2 w-4 h-4" /> Atrás
+              </Button>
+              <Button className="bg-emerald-600 hover:bg-emerald-700 h-12 px-8 text-lg w-full md:w-auto shadow-lg shadow-emerald-200">
+                Ver Ofertas Gratis
+              </Button>
             </div>
-          )}
+          </Card>
+        )}
+      </div>
+    </div>
+  )
+}
 
-          <div className="pt-4 flex justify-end">
-            {step < 3 ? (
-              <Button onClick={handleNext} className="bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto">
-                Siguiente <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            ) : (
-              <Button className="bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto">
-                Solicitar Estudio Gratuito
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+function PurposeCard({ icon, title, onClick }: { icon: React.ReactNode, title: string, onClick: () => void }) {
+  return (
+    <div 
+      onClick={onClick}
+      className="bg-white p-8 rounded-xl shadow-md border border-slate-100 cursor-pointer transition-all hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 group text-center flex flex-col items-center justify-center gap-4 h-48"
+    >
+      <div className="p-4 bg-slate-50 rounded-full group-hover:bg-emerald-50 transition-colors">
+        {icon}
+      </div>
+      <h3 className="text-lg font-bold text-slate-700 group-hover:text-emerald-700">{title}</h3>
     </div>
   )
 }
