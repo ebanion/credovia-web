@@ -6,25 +6,44 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Slider } from "@/components/ui/slider"
 import { CheckCircle2, Home, Building, TrendingUp, RefreshCw, ArrowLeft } from "lucide-react"
 
 export default function MortgageRequestForm() {
   const [step, setStep] = useState(1)
-  const [purpose, setPurpose] = useState("")
+  const [formData, setFormData] = useState({
+    purpose: "",
+    searchStatus: "",
+    timing: "",
+    propertyPrice: "",
+    contractType: "",
+    monthlyIncome: "",
+    savings: 50000,
+    contact: {
+      name: "",
+      email: "",
+      phone: ""
+    }
+  })
   
   const handleNext = () => setStep(step + 1)
   const handleBack = () => setStep(Math.max(1, step - 1))
   
-  const handlePurposeSelect = (value: string) => {
-    setPurpose(value)
+  // Auto-advance helper for single choice selections
+  const handleSelection = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
     handleNext()
   }
 
   const steps = [
     { title: "Finalidad", description: "¿Para qué quieres la hipoteca?" },
-    { title: "Vivienda", description: "Datos del inmueble" },
-    { title: "Económico", description: "Situación financiera" },
-    { title: "Contacto", description: "Tus datos" },
+    { title: "Búsqueda", description: "¿Cómo va tu búsqueda de vivienda?" },
+    { title: "Plazos", description: "¿Cuándo tienes previsto comprar?" },
+    { title: "Valor", description: "¿Cuál es el valor de la vivienda?" },
+    { title: "Laboral", description: "¿Qué tipo de contrato tienes?" },
+    { title: "Ingresos", description: "Ingresos totales mensuales" },
+    { title: "Ahorros", description: "¿Cuántos ahorros aportas?" },
+    { title: "Contacto", description: "Datos de contacto" },
   ]
   
   // Progress calculation
@@ -32,194 +51,209 @@ export default function MortgageRequestForm() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      {/* Step Indicator */}
-      <div className="mb-12">
-        <div className="flex justify-between items-center mb-4 text-sm font-medium text-slate-500">
+      {/* Progress Bar */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-2 text-sm font-medium text-slate-500">
            <span>Paso {step} de {steps.length}</span>
            <span>{Math.round(progress)}% completado</span>
         </div>
         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
           <div 
-            className="h-full bg-emerald-500 transition-all duration-500 ease-out rounded-full"
+            className="h-full bg-primary transition-all duration-500 ease-out rounded-full"
             style={{ width: `${progress}%` }}
           />
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-slate-900 mb-3">{steps[step-1].description}</h2>
-          <p className="text-slate-500">Te ayudamos a encontrar la mejor opción del mercado.</p>
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">{steps[step-1].description}</h2>
         </div>
 
-        {/* Step 1: Purpose */}
-        {step === 1 && (
-          <div className="grid md:grid-cols-2 gap-4">
-            <PurposeCard 
-              icon={<Home className="w-8 h-8 text-emerald-600" />}
-              title="Comprar vivienda habitual"
-              onClick={() => handlePurposeSelect("first_home")}
-            />
-            <PurposeCard 
-              icon={<Building className="w-8 h-8 text-blue-600" />}
-              title="Segunda residencia"
-              onClick={() => handlePurposeSelect("second_home")}
-            />
-            <PurposeCard 
-              icon={<TrendingUp className="w-8 h-8 text-amber-500" />}
-              title="Inversión"
-              onClick={() => handlePurposeSelect("investment")}
-            />
-            <PurposeCard 
-              icon={<RefreshCw className="w-8 h-8 text-purple-600" />}
-              title="Mejorar mi hipoteca"
-              onClick={() => handlePurposeSelect("improvement")}
-            />
-          </div>
-        )}
+        <Card className="border-0 shadow-lg p-6 bg-white rounded-2xl">
+          <CardContent className="space-y-6 pt-2 px-0 pb-0">
+            
+            {/* Step 1: Purpose */}
+            {step === 1 && (
+              <div className="grid md:grid-cols-2 gap-4">
+                <OptionButton 
+                  label="Nueva hipoteca" 
+                  selected={formData.purpose === "new"}
+                  onClick={() => handleSelection("purpose", "new")}
+                />
+                <OptionButton 
+                  label="Mejorar mi hipoteca" 
+                  selected={formData.purpose === "improvement"}
+                  onClick={() => handleSelection("purpose", "improvement")}
+                />
+              </div>
+            )}
 
-        {/* Step 2: Property Details */}
-        {step === 2 && (
-          <Card className="border-0 shadow-lg p-6">
-            <CardContent className="space-y-6 pt-6">
-              <div className="space-y-3">
-                <Label className="text-base font-semibold">¿Has encontrado ya la casa?</Label>
-                <div className="grid grid-cols-2 gap-4">
-                  <Button variant="outline" className="h-14 text-lg hover:border-emerald-500 hover:text-emerald-600">Sí</Button>
-                  <Button variant="outline" className="h-14 text-lg hover:border-emerald-500 hover:text-emerald-600">No, aún busco</Button>
+            {/* Step 2: Search Status */}
+            {step === 2 && (
+              <div className="grid gap-3">
+                {["Sigo buscando", "Tengo la casa elegida", "Negociando precio", "He reservado la vivienda"].map((option) => (
+                  <OptionButton 
+                    key={option}
+                    label={option} 
+                    selected={formData.searchStatus === option}
+                    onClick={() => handleSelection("searchStatus", option)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Step 3: Timing */}
+            {step === 3 && (
+              <div className="grid gap-3">
+                 {["Lo antes posible", "En 3 meses", "En 6 meses", "En 1 año", "Más de 1 año"].map((option) => (
+                  <OptionButton 
+                    key={option}
+                    label={option} 
+                    selected={formData.timing === option}
+                    onClick={() => handleSelection("timing", option)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {/* Step 4: Property Value */}
+            {step === 4 && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-3">
+                  {["Menos de 100.000 €", "100.000 - 150.000 €", "150.000 - 250.000 €", "250.000 - 400.000 €", "Más de 400.000 €"].map((option) => (
+                    <OptionButton 
+                      key={option}
+                      label={option} 
+                      selected={formData.propertyPrice === option}
+                      onClick={() => handleSelection("propertyPrice", option)}
+                    />
+                  ))}
                 </div>
               </div>
+            )}
 
-              <div className="space-y-3">
-                <Label className="text-base font-semibold">Precio de la vivienda (€)</Label>
-                <Input type="number" placeholder="Ej: 250000" className="h-14 text-lg px-4" />
+            {/* Step 5: Contract Type */}
+            {step === 5 && (
+              <div className="grid gap-3">
+                {["Indefinido", "Temporal", "Funcionario", "Autónomo", "Pensionista", "Desempleado"].map((option) => (
+                  <OptionButton 
+                    key={option}
+                    label={option} 
+                    selected={formData.contractType === option}
+                    onClick={() => handleSelection("contractType", option)}
+                  />
+                ))}
               </div>
+            )}
 
-              <div className="space-y-3">
-                <Label className="text-base font-semibold">Ubicación</Label>
-                <Select>
-                  <SelectTrigger className="h-14 text-lg px-4">
-                    <SelectValue placeholder="Selecciona provincia" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="madrid">Madrid</SelectItem>
-                    <SelectItem value="barcelona">Barcelona</SelectItem>
-                    <SelectItem value="valencia">Valencia</SelectItem>
-                    <SelectItem value="sevilla">Sevilla</SelectItem>
-                  </SelectContent>
-                </Select>
+            {/* Step 6: Monthly Income */}
+            {step === 6 && (
+              <div className="grid grid-cols-2 gap-3">
+                {["Menos de 1.500 €", "1.500 - 2.000 €", "2.000 - 3.000 €", "3.000 - 5.000 €", "Más de 5.000 €"].map((option) => (
+                  <OptionButton 
+                    key={option}
+                    label={option} 
+                    selected={formData.monthlyIncome === option}
+                    onClick={() => handleSelection("monthlyIncome", option)}
+                  />
+                ))}
               </div>
-            </CardContent>
-            <div className="p-6 pt-0 flex justify-between">
-              <Button variant="ghost" onClick={handleBack} className="text-slate-500">
-                <ArrowLeft className="mr-2 w-4 h-4" /> Atrás
-              </Button>
-              <Button onClick={handleNext} className="bg-emerald-600 hover:bg-emerald-700 h-12 px-8 text-lg">
-                Continuar
-              </Button>
-            </div>
-          </Card>
-        )}
+            )}
 
-        {/* Step 3: Financials */}
-        {step === 3 && (
-          <Card className="border-0 shadow-lg p-6">
-            <CardContent className="space-y-6 pt-6">
-               <div className="space-y-3">
-                <Label className="text-base font-semibold">Ingresos mensuales netos (Hogar)</Label>
-                <Input type="number" placeholder="Ej: 3000" className="h-14 text-lg px-4" />
-                <p className="text-sm text-slate-500">Suma de las nóminas de todos los titulares</p>
+            {/* Step 7: Savings */}
+            {step === 7 && (
+              <div className="space-y-8 py-4">
+                 <div className="text-center">
+                    <span className="text-4xl font-bold text-primary">{formData.savings.toLocaleString('es-ES')} €</span>
+                 </div>
+                 <Slider 
+                    value={[formData.savings]} 
+                    min={0} 
+                    max={200000} 
+                    step={1000} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, savings: val[0] }))}
+                    className="py-4"
+                 />
+                 <div className="flex justify-between text-xs text-slate-400">
+                    <span>0 €</span>
+                    <span>200.000 € +</span>
+                 </div>
+                 <Button onClick={handleNext} className="w-full h-14 text-lg bg-secondary hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg">
+                    Continuar
+                 </Button>
               </div>
+            )}
 
-              <div className="space-y-3">
-                <Label className="text-base font-semibold">Ahorros disponibles</Label>
-                <Input type="number" placeholder="Ej: 60000" className="h-14 text-lg px-4" />
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-base font-semibold">Situación laboral principal</Label>
-                <Select>
-                  <SelectTrigger className="h-14 text-lg px-4">
-                    <SelectValue placeholder="Selecciona..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="indefinido">Indefinido</SelectItem>
-                    <SelectItem value="temporal">Temporal</SelectItem>
-                    <SelectItem value="autonomo">Autónomo</SelectItem>
-                    <SelectItem value="funcionario">Funcionario</SelectItem>
-                    <SelectItem value="pensionista">Pensionista</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-            <div className="p-6 pt-0 flex justify-between">
-              <Button variant="ghost" onClick={handleBack} className="text-slate-500">
-                <ArrowLeft className="mr-2 w-4 h-4" /> Atrás
-              </Button>
-              <Button onClick={handleNext} className="bg-emerald-600 hover:bg-emerald-700 h-12 px-8 text-lg">
-                Continuar
-              </Button>
-            </div>
-          </Card>
-        )}
-
-        {/* Step 4: Contact */}
-        {step === 4 && (
-          <Card className="border-0 shadow-lg p-6">
-            <CardContent className="space-y-6 pt-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <Label className="text-base font-semibold">Nombre</Label>
-                  <Input placeholder="Tu nombre" className="h-14 text-lg px-4" />
+            {/* Step 8: Contact */}
+            {step === 8 && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Nombre completo</Label>
+                  <Input 
+                    placeholder="Tu nombre y apellidos" 
+                    className="h-12 bg-slate-50 border-slate-200"
+                    onChange={(e) => setFormData(prev => ({ ...prev, contact: { ...prev.contact, name: e.target.value } }))}
+                  />
                 </div>
-                <div className="space-y-3">
-                  <Label className="text-base font-semibold">Apellidos</Label>
-                  <Input placeholder="Tus apellidos" className="h-14 text-lg px-4" />
+                <div className="space-y-2">
+                  <Label>Teléfono</Label>
+                  <Input 
+                    type="tel" 
+                    placeholder="600 000 000" 
+                    className="h-12 bg-slate-50 border-slate-200"
+                    onChange={(e) => setFormData(prev => ({ ...prev, contact: { ...prev.contact, phone: e.target.value } }))}
+                  />
                 </div>
-              </div>
+                <div className="space-y-2">
+                  <Label>Email</Label>
+                  <Input 
+                    type="email" 
+                    placeholder="tu@email.com" 
+                    className="h-12 bg-slate-50 border-slate-200"
+                    onChange={(e) => setFormData(prev => ({ ...prev, contact: { ...prev.contact, email: e.target.value } }))}
+                  />
+                </div>
 
-              <div className="space-y-3">
-                <Label className="text-base font-semibold">Email</Label>
-                <Input type="email" placeholder="tu@email.com" className="h-14 text-lg px-4" />
-              </div>
+                <div className="flex items-start space-x-3 pt-2">
+                  <input type="checkbox" className="mt-1 w-4 h-4 rounded border-slate-300 text-secondary focus:ring-secondary" id="privacy" />
+                  <Label htmlFor="privacy" className="text-xs text-slate-500 font-normal leading-relaxed cursor-pointer">
+                    Acepto la <span className="underline">política de privacidad</span> y las condiciones legales.
+                  </Label>
+                </div>
 
-              <div className="space-y-3">
-                <Label className="text-base font-semibold">Teléfono</Label>
-                <Input type="tel" placeholder="600 123 456" className="h-14 text-lg px-4" />
+                 <Button className="w-full h-14 text-lg bg-secondary hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg mt-4">
+                    Ver ofertas personalizadas
+                 </Button>
               </div>
+            )}
 
-              <div className="flex items-start space-x-3 p-4 bg-slate-50 rounded-lg">
-                <input type="checkbox" className="mt-1 w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500" id="privacy" />
-                <Label htmlFor="privacy" className="text-sm text-slate-600 font-normal leading-relaxed cursor-pointer">
-                  He leído y acepto la <span className="underline decoration-dotted">política de privacidad</span>. Autorizo a Credovia a contactarme para informarme sobre ofertas hipotecarias adaptadas a mi perfil.
-                </Label>
-              </div>
-            </CardContent>
-            <div className="p-6 pt-0 flex justify-between">
-              <Button variant="ghost" onClick={handleBack} className="text-slate-500">
-                <ArrowLeft className="mr-2 w-4 h-4" /> Atrás
-              </Button>
-              <Button className="bg-emerald-600 hover:bg-emerald-700 h-12 px-8 text-lg w-full md:w-auto shadow-lg shadow-emerald-200">
-                Ver Ofertas Gratis
+          </CardContent>
+          
+          {step > 1 && (
+            <div className="px-0 pt-6 flex justify-start">
+              <Button variant="ghost" onClick={handleBack} className="text-slate-400 hover:text-slate-600 pl-0 hover:bg-transparent">
+                <ArrowLeft className="mr-2 w-4 h-4" /> Anterior
               </Button>
             </div>
-          </Card>
-        )}
+          )}
+        </Card>
       </div>
     </div>
   )
 }
 
-function PurposeCard({ icon, title, onClick }: { icon: React.ReactNode, title: string, onClick: () => void }) {
+function OptionButton({ label, selected, onClick }: { label: string, selected: boolean, onClick: () => void }) {
   return (
-    <div 
+    <button
       onClick={onClick}
-      className="bg-white p-8 rounded-xl shadow-md border border-slate-100 cursor-pointer transition-all hover:shadow-xl hover:border-emerald-200 hover:-translate-y-1 group text-center flex flex-col items-center justify-center gap-4 h-48"
+      className={`w-full p-4 rounded-lg border-2 text-left transition-all duration-200 font-medium text-lg
+        ${selected 
+          ? "border-secondary bg-emerald-50 text-secondary shadow-sm" 
+          : "border-slate-200 bg-white text-slate-700 hover:border-emerald-200 hover:bg-slate-50"
+        }`}
     >
-      <div className="p-4 bg-slate-50 rounded-full group-hover:bg-emerald-50 transition-colors">
-        {icon}
-      </div>
-      <h3 className="text-lg font-bold text-slate-700 group-hover:text-emerald-700">{title}</h3>
-    </div>
+      {label}
+    </button>
   )
 }
