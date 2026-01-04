@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import MortgageRequestForm from "@/components/mortgage-request-form"
 import {
   Home,
   Calculator,
@@ -21,80 +22,103 @@ export default function MejotecaLanding() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
-              <span className="text-2xl font-bold text-gray-900 font-sans px-0 shadow-none">Credovia</span>
+              <span className="text-3xl font-extrabold text-emerald-600 font-sans tracking-tight">Credovia</span>
             </div>
-            <nav className="hidden md:flex space-x-8">
+            <nav className="hidden md:flex space-x-8 items-center">
+               <div className="flex items-center text-slate-600 font-medium">
+                  <Phone className="w-5 h-5 mr-2 text-emerald-600" />
+                  <span>Llámanos gratis: </span>
+                  <span className="ml-1 text-slate-900 font-bold">900 123 456</span>
+               </div>
             </nav>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative h-[600px] bg-gray-900">
-        <Image
-          src="/placeholder.svg?height=600&width=1200"
-          alt="Business professionals"
-          fill
-          className="object-cover opacity-70"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-40" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center bg-orange-400">
-          <div className="text-center text-white max-w-3xl mx-auto font-sans">
-            <h1 className="text-6xl md:text-8xl font-light mb-6">Your partner in life.</h1>
-            <h2 className="text-2xl md:text-3xl mb-8 font-light">
-              Mientras tu buscas casa, nosotros buscamos tu hipoteca
-            </h2>
-            <p className="mb-8 opacity-90 tracking-normal text-2xl font-light">
-              Combinas la experiencia de más de 10 años con la Inteligencia artificial para encontrar la mejor opción.
+      {/* Hero Section with Embedded Form */}
+      <section className="relative bg-slate-50 pb-20 pt-10">
+        <div className="absolute inset-0 z-0">
+           {/* Background decorative elements */}
+           <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-emerald-50 to-slate-50"></div>
+        </div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 mb-6 tracking-tight">
+              La mejor hipoteca <span className="text-emerald-600">para ti</span>
+            </h1>
+            <p className="text-xl text-slate-600">
+              Comparamos todas las hipotecas del mercado y negociamos por ti para conseguirte las mejores condiciones. Gratis y sin compromiso.
             </p>
-            <Link href="/simulador" passHref>
-              <Button
-                variant="destructive"
-                size="lg"
-                className="hover:bg-blue-700 px-8 py-3 text-black bg-white font-extrabold"
-              >
-                Simula tu hipoteca
-              </Button>
-            </Link>
           </div>
+          
+          {/* Main Wizard Form - Directly embedded */}
+          <div className="mt-8">
+             <MortgageRequestForm />
+          </div>
+          
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center opacity-80">
+             <div>
+                <p className="text-3xl font-bold text-emerald-700">+100</p>
+                <p className="text-slate-600">Bancos asociados</p>
+             </div>
+             <div>
+                <p className="text-3xl font-bold text-emerald-700">100%</p>
+                <p className="text-slate-600">Gratuito</p>
+             </div>
+             <div>
+                <p className="text-3xl font-bold text-emerald-700">24h</p>
+                <p className="text-slate-600">Respuesta rápida</p>
+             </div>
+             <div>
+                <p className="text-3xl font-bold text-emerald-700">4.9/5</p>
+                <p className="text-slate-600">Valoración clientes</p>
+             </div>
+          </div>
+
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+             <h2 className="text-3xl font-bold text-slate-900 mb-4">¿Por qué elegir Credovia?</h2>
+             <p className="text-slate-600 max-w-2xl mx-auto">Nos encargamos de todo el proceso para que tú solo tengas que preocuparte de elegir la casa de tus sueños.</p>
+          </div>
+
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="text-center p-8 border-0 shadow-lg">
+            <Card className="text-center p-8 border-0 shadow-xl hover:shadow-2xl transition-shadow bg-slate-50">
               <CardContent className="pt-6">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Home className="w-8 h-8 text-blue-600" />
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                  <Home className="w-8 h-8 text-emerald-600" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Hasta el 100% financiado</h3>
-                <p className="text-gray-600 text-sm">Financiamos hasta el 100% del valor de tasación de tu vivienda</p>
+                <h3 className="text-xl font-bold mb-3 text-slate-900">Hasta el 100% financiado</h3>
+                <p className="text-slate-600">Conseguimos financiar hasta el 100% del valor de tasación de tu vivienda, incluyendo gastos.</p>
               </CardContent>
             </Card>
 
-            <Card className="text-center p-8 border-0 shadow-lg">
+            <Card className="text-center p-8 border-0 shadow-xl hover:shadow-2xl transition-shadow bg-slate-50">
               <CardContent className="pt-6">
-                <div className="w-16 h-16 bg-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Calculator className="w-8 h-8 text-blue-700" />
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                  <Calculator className="w-8 h-8 text-emerald-600" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Interés fijo desde 1,45% TIN</h3>
-                <p className="text-gray-600 text-sm">Ofrecemos los mejores tipos de interés del mercado</p>
+                <h3 className="text-xl font-bold mb-3 text-slate-900">El interés más bajo</h3>
+                <p className="text-slate-600">Negociamos con los bancos para ofrecerte tipos de interés preferentes que no encontrarás en sucursal.</p>
               </CardContent>
             </Card>
 
-            <Card className="text-center p-8 border-0 shadow-lg">
+            <Card className="text-center p-8 border-0 shadow-xl hover:shadow-2xl transition-shadow bg-slate-50">
               <CardContent className="pt-6">
-                <div className="w-16 h-16 bg-blue-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FileText className="w-8 h-8 text-blue-800" />
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                  <FileText className="w-8 h-8 text-emerald-600" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Hipotecas con 0% comisiones</h3>
-                <p className="text-gray-600 text-sm">Sin comisiones de apertura, estudio o cancelación anticipada</p>
+                <h3 className="text-xl font-bold mb-3 text-slate-900">Sin comisiones</h3>
+                <p className="text-slate-600">Nuestro servicio es gratuito para ti. Sin comisiones de apertura, estudio o cancelación.</p>
               </CardContent>
             </Card>
           </div>
@@ -102,100 +126,100 @@ export default function MejotecaLanding() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-20 bg-emerald-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">¿Qué piensan nuestros clientes?</h2>
-            <p className="text-gray-600">Lee algunos de los testimonios de nuestros clientes satisfechos</p>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold mb-4">Lo que dicen nuestros clientes</h2>
+            <div className="flex justify-center items-center gap-2 mb-4">
+               <div className="flex text-yellow-400">
+                  {[...Array(5)].map((_, j) => (
+                    <Star key={j} className="w-5 h-5 fill-current" />
+                  ))}
+               </div>
+               <span className="font-semibold text-lg">4.9/5 en Google Reviews</span>
+            </div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-8">
             {[...Array(3)].map((_, i) => (
-              <Card key={i} className="p-6">
+              <Card key={i} className="p-8 bg-emerald-800 border-0 text-white shadow-none">
                 <CardContent className="pt-0">
-                  <div className="flex items-center mb-4">
-                    <div className="flex text-yellow-400">
-                      {[...Array(5)].map((_, j) => (
-                        <Star key={j} className="w-4 h-4 fill-current" />
-                      ))}
-                    </div>
-                    <Badge variant="secondary" className="ml-2">Google</Badge>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-4">"Opinión de cliente satisfecho número {i + 1}"</p>
+                  <p className="text-emerald-100 mb-6 italic text-lg leading-relaxed">
+                    "Gracias a Credovia conseguí una hipoteca con unas condiciones increíbles que mi banco de toda la vida no me ofrecía. El proceso fue rápido y muy sencillo."
+                  </p>
                   <div className="flex items-center">
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                    <div className="w-10 h-10 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold border-2 border-emerald-500">
                       {["M", "J", "A"][i]}
                     </div>
-                    <span className="ml-2 text-sm font-medium">{["María", "Juan", "Ana"][i]}</span>
+                    <div className="ml-3">
+                        <p className="font-bold">{["María González", "Juan Pérez", "Ana Martínez"][i]}</p>
+                        <p className="text-emerald-300 text-sm">Hipoteca Fija</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-
-          <div className="text-center mt-8">
-            <Button variant="outline">Ver todas las reseñas</Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4 text-black">¿Quieres contactar con nosotros?</h2>
-            <p className="opacity-90 text-black">
-              Estamos aquí para ayudarte con cualquier duda que tengas sobre hipotecas
-            </p>
-          </div>
-
-          <div className="flex justify-center space-x-4">
-            <Button className="hover:bg-gray-100 text-black bg-slate-400">
-              <Phone className="w-4 h-4 mr-2" />
-              +34 653446692
-            </Button>
-            <Button
-              variant="outline"
-              className="border-white hover:bg-white hover:text-blue-600 text-black bg-slate-400"
-            >
-              Escríbenos un WhatsApp
-            </Button>
-          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-blue-950 text-white py-12">
+      <footer className="bg-slate-900 text-slate-300 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-2xl font-bold mb-4">Credovia</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center"><Phone className="w-4 h-4 mr-2" /> +34 653446692</div>
-                <div className="flex items-center"><Mail className="w-4 h-4 mr-2" /> info@credovia.com</div>
-                <div className="flex items-center"><MapPin className="w-4 h-4 mr-2" /> Madrid, España</div>
+          <div className="grid md:grid-cols-4 gap-12">
+            <div className="col-span-1 md:col-span-1">
+              <h3 className="text-2xl font-bold text-white mb-6">Credovia</h3>
+              <p className="text-sm leading-relaxed mb-6">
+                 Expertos hipotecarios a tu servicio. Encontramos, negociamos y gestionamos tu hipoteca para que consigas la casa de tus sueños.
+              </p>
+              <div className="flex space-x-4">
+                <Link href="#" className="hover:text-emerald-400 transition-colors"><Facebook className="w-5 h-5" /></Link>
+                <Link href="#" className="hover:text-emerald-400 transition-colors"><Instagram className="w-5 h-5" /></Link>
+                <Link href="#" className="hover:text-emerald-400 transition-colors"><Linkedin className="w-5 h-5" /></Link>
               </div>
             </div>
-            {/* Más secciones de footer... */}
-          </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 flex justify-between items-center">
-            <p className="text-sm text-gray-400">© 2024 Credovia. Todos los derechos reservados.</p>
-            <div className="flex space-x-4">
-              <Link href="#" className="text-gray-400 hover:text-white"><Facebook className="w-5 h-5" /></Link>
-              <Link href="#" className="text-gray-400 hover:text-white"><Instagram className="w-5 h-5" /></Link>
-              <Link href="#" className="text-gray-400 hover:text-white"><Linkedin className="w-5 h-5" /></Link>
+            
+            <div>
+               <h4 className="text-white font-bold mb-6">Servicios</h4>
+               <ul className="space-y-3 text-sm">
+                  <li><Link href="#" className="hover:text-white">Hipoteca Fija</Link></li>
+                  <li><Link href="#" className="hover:text-white">Hipoteca Variable</Link></li>
+                  <li><Link href="#" className="hover:text-white">Hipoteca Mixta</Link></li>
+                  <li><Link href="#" className="hover:text-white">Subrogación</Link></li>
+               </ul>
             </div>
+
+            <div>
+               <h4 className="text-white font-bold mb-6">Empresa</h4>
+               <ul className="space-y-3 text-sm">
+                  <li><Link href="#" className="hover:text-white">Sobre Nosotros</Link></li>
+                  <li><Link href="#" className="hover:text-white">Blog</Link></li>
+                  <li><Link href="#" className="hover:text-white">Contacto</Link></li>
+                  <li><Link href="#" className="hover:text-white">Aviso Legal</Link></li>
+               </ul>
+            </div>
+
+            <div>
+              <h4 className="text-white font-bold mb-6">Contacto</h4>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center"><Phone className="w-4 h-4 mr-3 text-emerald-500" /> 900 123 456</div>
+                <div className="flex items-center"><Mail className="w-4 h-4 mr-3 text-emerald-500" /> info@credovia.com</div>
+                <div className="flex items-center"><MapPin className="w-4 h-4 mr-3 text-emerald-500" /> Madrid, España</div>
+              </div>
+            </div>
+          </div>
+          <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center text-xs">
+            <p>© 2026 Credovia. Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>
 
       {/* Floating Chat Button */}
       <div className="fixed bottom-6 right-6 z-50">
-        <Button className="rounded-full w-14 h-14 bg-blue-600 hover:bg-blue-700 shadow-lg">
+        <Button className="rounded-full w-14 h-14 bg-emerald-600 hover:bg-emerald-700 shadow-lg text-white">
           <MessageCircle className="w-6 h-6" />
         </Button>
       </div>
     </div>
   )
 }
-

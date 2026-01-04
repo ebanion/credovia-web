@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import MortgageCalculator from "./_components/MortgageCalculator"
-import MortgageRequestForm from "./_components/MortgageRequestForm"
+import MortgageRequestForm from "@/components/mortgage-request-form"
 import { FileText, Calculator } from "lucide-react"
 
 export default function SimuladorPage() {
