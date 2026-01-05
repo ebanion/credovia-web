@@ -26,7 +26,7 @@ export default function LandingPage() {
       {/* 1. Header Simple */}
       <header className="bg-white py-6 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-4 flex justify-center">
-          <Image src="/logo-credovia.png" alt="Credovia Logo" width={200} height={50} className="h-12 w-auto" />
+          <Image src="/logo-credovia-official.png" alt="Credovia Logo" width={300} height={75} className="h-16 w-auto" />
         </div>
       </header>
 
