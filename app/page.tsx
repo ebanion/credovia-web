@@ -37,7 +37,7 @@ export default function LandingPage() {
                 sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, 340px"
               />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-primary tracking-tight mt-2">
+            <h1 className="text-5xl md:text-6xl font-extrabold text-[#1e4bb5] tracking-tight mt-2">
               Credovia
             </h1>
           </Link>
