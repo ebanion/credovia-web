@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
 import { ArrowLeft } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export default function MortgageRequestForm() {
+  const { toast } = useToast()
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [privacyAccepted, setPrivacyAccepted] = useState(false)
@@ -56,7 +58,11 @@ export default function MortgageRequestForm() {
 
   const handleSubmit = async () => {
     if (!privacyAccepted) {
-      alert("Debes aceptar la política de privacidad para continuar.")
+      toast({
+        variant: "destructive",
+        title: "Atención",
+        description: "Debes aceptar la política de privacidad para continuar.",
+      })
       return
     }
 
@@ -73,17 +79,32 @@ export default function MortgageRequestForm() {
       })
 
       if (response.ok) {
-        alert('¡Solicitud enviada! Nos pondremos en contacto contigo pronto.')
-        // Optionally reset form or redirect here
+        toast({
+          title: "¡Solicitud enviada!",
+          description: "Nos pondremos en contacto contigo muy pronto.",
+          duration: 5000,
+        })
+        // Optional: Reset form or redirect
       } else {
         const errorData = await response.json().catch(() => ({}))
         console.error('Submission error:', errorData)
         const errorMessage = errorData.error || 'Error desconocido';
-        alert(`Error: ${errorMessage}`)
+        
+        toast({
+          variant: "destructive",
+          title: "Error al enviar",
+          description: errorMessage.includes('API Key') 
+            ? "Error de configuración del servidor. Por favor inténtalo más tarde."
+            : "Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo.",
+        })
       }
     } catch (error) {
       console.error('Network error:', error)
-      alert('Hubo un problema de conexión al enviar tu solicitud.')
+      toast({
+        variant: "destructive",
+        title: "Error de conexión",
+        description: "Comprueba tu conexión a internet e inténtalo de nuevo.",
+      })
     } finally {
       setIsSubmitting(false)
     }
