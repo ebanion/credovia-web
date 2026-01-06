@@ -57,7 +57,11 @@ export default function MortgageRequestForm() {
   }
 
   const handleSubmit = async () => {
+    console.log("Button clicked. Privacy accepted:", privacyAccepted);
+    
     if (!privacyAccepted) {
+      // Fallback alert + toast
+      alert("Por favor, acepta la política de privacidad para continuar.");
       toast({
         variant: "destructive",
         title: "Atención",
@@ -79,10 +83,13 @@ export default function MortgageRequestForm() {
       })
 
       if (response.ok) {
+        // Success message requested by user
+        const successMsg = "Muchas gracias por confiar en nosotros. Le enviaremos un estudio personalizado de su caso y un asesor se pondrá en contacto con usted lo antes posible.";
+        alert(successMsg); // Fallback
         toast({
-          title: "¡Solicitud enviada!",
-          description: "Nos pondremos en contacto contigo muy pronto.",
-          duration: 5000,
+          title: "¡Solicitud recibida!",
+          description: successMsg,
+          duration: 8000, // Longer duration for reading
         })
         // Optional: Reset form or redirect
       } else {
@@ -90,20 +97,25 @@ export default function MortgageRequestForm() {
         console.error('Submission error:', errorData)
         const errorMessage = errorData.error || 'Error desconocido';
         
+        const friendlyError = "Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo.";
+        alert(friendlyError + " (" + errorMessage + ")");
+        
         toast({
           variant: "destructive",
           title: "Error al enviar",
           description: errorMessage.includes('API Key') 
-            ? "Error de configuración del servidor. Por favor inténtalo más tarde."
-            : "Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo.",
+            ? "Error de configuración del servidor."
+            : friendlyError,
         })
       }
     } catch (error) {
       console.error('Network error:', error)
+      const netError = "Comprueba tu conexión a internet e inténtalo de nuevo.";
+      alert(netError);
       toast({
         variant: "destructive",
         title: "Error de conexión",
-        description: "Comprueba tu conexión a internet e inténtalo de nuevo.",
+        description: netError,
       })
     } finally {
       setIsSubmitting(false)
