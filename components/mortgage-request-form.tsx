@@ -16,8 +16,16 @@ export default function MortgageRequestForm() {
     searchStatus: "",
     timing: "",
     propertyPrice: "",
-    contractType: "",
-    monthlyIncome: "",
+    region: "",
+    holders: 1,
+    holder1: {
+      contractType: "",
+      monthlyIncome: ""
+    },
+    holder2: {
+      contractType: "",
+      monthlyIncome: ""
+    },
     savings: 50000,
     contact: {
       name: "",
@@ -30,8 +38,17 @@ export default function MortgageRequestForm() {
   const handleBack = () => setStep(Math.max(1, step - 1))
   
   // Auto-advance helper for single choice selections
-  const handleSelection = (field: string, value: string) => {
+  const handleSelection = (field: string, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+    handleNext()
+  }
+
+  // Helper for nested state
+  const handleHolderSelection = (holder: 'holder1' | 'holder2', field: string, value: string) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      [holder]: { ...prev[holder], [field]: value } 
+    }))
     handleNext()
   }
 
@@ -40,14 +57,42 @@ export default function MortgageRequestForm() {
     { title: "Búsqueda", description: "¿Cómo va tu búsqueda de vivienda?" },
     { title: "Plazos", description: "¿Cuándo tienes previsto comprar?" },
     { title: "Valor", description: "¿Cuál es el valor de la vivienda?" },
-    { title: "Laboral", description: "¿Qué tipo de contrato tienes?" },
-    { title: "Ingresos", description: "Ingresos totales mensuales" },
+    { title: "Ubicación", description: "¿Dónde está la vivienda?" },
+    { title: "Titulares", description: "¿Cuántas personas solicitan la hipoteca?" },
+    { title: "Laboral 1", description: "Contrato del primer titular" },
+    { title: "Ingresos 1", description: "Ingresos netos mensuales (Titular 1)" },
+    ...(formData.holders === 2 ? [
+      { title: "Laboral 2", description: "Contrato del segundo titular" },
+      { title: "Ingresos 2", description: "Ingresos netos mensuales (Titular 2)" }
+    ] : []),
     { title: "Ahorros", description: "¿Cuántos ahorros aportas?" },
     { title: "Contacto", description: "Datos de contacto" },
   ]
   
   // Progress calculation
   const progress = (step / steps.length) * 100
+
+  // Determine current step index relative to the dynamic steps array
+  // This logic is simple because we are just adding/removing steps from the array
+  // We need to map the linear `step` state to the correct content to render.
+  
+  // Let's redefine step rendering logic based on `step` counter
+  // Steps mapping:
+  // 1: Purpose
+  // 2: Search Status
+  // 3: Timing
+  // 4: Property Value
+  // 5: Location (Region)
+  // 6: Holders (1 or 2)
+  // 7: Holder 1 Contract
+  // 8: Holder 1 Income
+  // 9: Holder 2 Contract (if holders=2) OR Savings (if holders=1)
+  // ... and so on.
+  
+  // It's cleaner to keep `step` as a simple index into the `steps` array
+  // and render content based on the *title* or *id* of the current step from the array.
+  
+  const currentStepData = steps[step - 1] || steps[0]
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
@@ -67,14 +112,13 @@ export default function MortgageRequestForm() {
 
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">{steps[step-1].description}</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">{currentStepData.description}</h2>
         </div>
 
         <Card className="border-0 shadow-lg p-6 bg-white rounded-2xl">
           <CardContent className="space-y-6 pt-2 px-0 pb-0">
             
-            {/* Step 1: Purpose */}
-            {step === 1 && (
+            {currentStepData.title === "Finalidad" && (
               <div className="grid md:grid-cols-1 gap-4">
                 <OptionButton 
                   label="Simula tu hipoteca" 
@@ -85,8 +129,7 @@ export default function MortgageRequestForm() {
               </div>
             )}
 
-            {/* Step 2: Search Status */}
-            {step === 2 && (
+            {currentStepData.title === "Búsqueda" && (
               <div className="grid gap-3">
                 {["Sigo buscando", "Tengo la casa elegida", "Negociando precio", "He reservado la vivienda"].map((option) => (
                   <OptionButton 
@@ -99,8 +142,7 @@ export default function MortgageRequestForm() {
               </div>
             )}
 
-            {/* Step 3: Timing */}
-            {step === 3 && (
+            {currentStepData.title === "Plazos" && (
               <div className="grid gap-3">
                  {["Lo antes posible", "En 3 meses", "En 6 meses", "En 1 año", "Más de 1 año"].map((option) => (
                   <OptionButton 
@@ -113,8 +155,7 @@ export default function MortgageRequestForm() {
               </div>
             )}
 
-            {/* Step 4: Property Value */}
-            {step === 4 && (
+            {currentStepData.title === "Valor" && (
               <div className="space-y-6">
                 <div className="grid grid-cols-2 gap-3">
                   {["Menos de 100.000 €", "100.000 - 150.000 €", "150.000 - 250.000 €", "250.000 - 400.000 €", "Más de 400.000 €"].map((option) => (
@@ -129,36 +170,91 @@ export default function MortgageRequestForm() {
               </div>
             )}
 
-            {/* Step 5: Contract Type */}
-            {step === 5 && (
+            {currentStepData.title === "Ubicación" && (
+              <div className="space-y-6">
+                <Select onValueChange={(val) => handleSelection("region", val)}>
+                  <SelectTrigger className="h-14 text-lg">
+                    <SelectValue placeholder="Selecciona la provincia" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {[
+                      "A Coruña", "Álava", "Albacete", "Alicante", "Almería", "Asturias", "Ávila", "Badajoz", "Baleares", "Barcelona", "Burgos", "Cáceres", "Cádiz", "Cantabria", "Castellón", "Ciudad Real", "Córdoba", "Cuenca", "Girona", "Granada", "Guadalajara", "Guipúzcoa", "Huelva", "Huesca", "Jaén", "La Rioja", "Las Palmas", "León", "Lleida", "Lugo", "Madrid", "Málaga", "Murcia", "Navarra", "Ourense", "Palencia", "Pontevedra", "Salamanca", "Santa Cruz de Tenerife", "Segovia", "Sevilla", "Soria", "Tarragona", "Teruel", "Toledo", "Valencia", "Valladolid", "Vizcaya", "Zamora", "Zaragoza", "Ceuta", "Melilla"
+                    ].map((province) => (
+                      <SelectItem key={province} value={province}>{province}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {currentStepData.title === "Titulares" && (
+              <div className="grid gap-3">
+                <OptionButton 
+                  label="Solo yo" 
+                  selected={formData.holders === 1}
+                  onClick={() => handleSelection("holders", 1)}
+                />
+                <OptionButton 
+                  label="Dos titulares" 
+                  selected={formData.holders === 2}
+                  onClick={() => handleSelection("holders", 2)}
+                />
+              </div>
+            )}
+
+            {currentStepData.title === "Laboral 1" && (
               <div className="grid gap-3">
                 {["Indefinido", "Temporal", "Funcionario", "Autónomo", "Pensionista", "Desempleado"].map((option) => (
                   <OptionButton 
                     key={option}
                     label={option} 
-                    selected={formData.contractType === option}
-                    onClick={() => handleSelection("contractType", option)}
+                    selected={formData.holder1.contractType === option}
+                    onClick={() => handleHolderSelection("holder1", "contractType", option)}
                   />
                 ))}
               </div>
             )}
 
-            {/* Step 6: Monthly Income */}
-            {step === 6 && (
+            {currentStepData.title === "Ingresos 1" && (
               <div className="grid grid-cols-2 gap-3">
-                {["Menos de 1.500 €", "1.500 - 2.000 €", "2.000 - 3.000 €", "3.000 - 5.000 €", "Más de 5.000 €"].map((option) => (
+                {["Menos de 1.000 €", "1.000 - 1.500 €", "1.500 - 2.000 €", "2.000 - 3.000 €", "Más de 3.000 €"].map((option) => (
                   <OptionButton 
                     key={option}
                     label={option} 
-                    selected={formData.monthlyIncome === option}
-                    onClick={() => handleSelection("monthlyIncome", option)}
+                    selected={formData.holder1.monthlyIncome === option}
+                    onClick={() => handleHolderSelection("holder1", "monthlyIncome", option)}
                   />
                 ))}
               </div>
             )}
 
-            {/* Step 7: Savings */}
-            {step === 7 && (
+            {currentStepData.title === "Laboral 2" && (
+              <div className="grid gap-3">
+                {["Indefinido", "Temporal", "Funcionario", "Autónomo", "Pensionista", "Desempleado"].map((option) => (
+                  <OptionButton 
+                    key={option}
+                    label={option} 
+                    selected={formData.holder2.contractType === option}
+                    onClick={() => handleHolderSelection("holder2", "contractType", option)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {currentStepData.title === "Ingresos 2" && (
+              <div className="grid grid-cols-2 gap-3">
+                {["Menos de 1.000 €", "1.000 - 1.500 €", "1.500 - 2.000 €", "2.000 - 3.000 €", "Más de 3.000 €"].map((option) => (
+                  <OptionButton 
+                    key={option}
+                    label={option} 
+                    selected={formData.holder2.monthlyIncome === option}
+                    onClick={() => handleHolderSelection("holder2", "monthlyIncome", option)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {currentStepData.title === "Ahorros" && (
               <div className="space-y-8 py-4">
                  <div className="text-center">
                     <span className="text-4xl font-bold text-primary">{formData.savings.toLocaleString('es-ES')} €</span>
@@ -181,8 +277,7 @@ export default function MortgageRequestForm() {
               </div>
             )}
 
-            {/* Step 8: Contact */}
-            {step === 8 && (
+            {currentStepData.title === "Contacto" && (
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Nombre completo</Label>
