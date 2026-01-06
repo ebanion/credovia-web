@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import MortgageRequestForm from "@/components/mortgage-request-form"
+import { BankLogo } from "@/components/bank-logo"
 import {
   Clock,
   PiggyBank,
@@ -18,6 +19,21 @@ import {
   Linkedin,
   ArrowRight
 } from "lucide-react"
+
+const BANKS = [
+  { name: "Santander", file: "santander.png" },
+  { name: "BBVA", file: "bbva.png" },
+  { name: "CaixaBank", file: "caixabank.png" },
+  { name: "Sabadell", file: "sabadell.png" },
+  { name: "ING", file: "ing.png" },
+  { name: "Bankinter", file: "bankinter.png" },
+  { name: "Abanca", file: "abanca.png" },
+  { name: "EVO", file: "evo.png" },
+  { name: "Unicaja", file: "unicaja.png" },
+  { name: "Ibercaja", file: "ibercaja.png" },
+  { name: "Deutsche Bank", file: "deutsche.png" },
+  { name: "Kutxabank", file: "kutxabank.png" },
+]
 
 export default function LandingPage() {
   return (
@@ -133,12 +149,10 @@ export default function LandingPage() {
              <h2 className="text-2xl md:text-3xl font-bold text-primary mb-8">
                Consigue ofertas personalizadas de hasta 20 bancos sin tener que solicitarlas una por una
              </h2>
-             {/* Bank Logos Grid (Placeholder for logos) */}
-             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-white p-4 rounded-lg shadow-sm h-16 flex items-center justify-center">
-                    <span className="font-bold text-slate-400">BANCO {i+1}</span>
-                  </div>
+             {/* Bank Logos Grid */}
+             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 items-center justify-items-center">
+                {BANKS.map((bank) => (
+                  <BankLogo key={bank.name} name={bank.name} file={bank.file} />
                 ))}
              </div>
           </div>
