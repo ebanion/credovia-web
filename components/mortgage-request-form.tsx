@@ -7,10 +7,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { CheckCircle2, Home, Building, TrendingUp, RefreshCw, ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 
 export default function MortgageRequestForm() {
   const [step, setStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     purpose: "",
     searchStatus: "",
@@ -52,6 +53,31 @@ export default function MortgageRequestForm() {
     handleNext()
   }
 
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      if (response.ok) {
+        alert('¡Solicitud enviada! Nos pondremos en contacto contigo pronto.')
+        // Optionally reset form or redirect here
+      } else {
+        alert('Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo.')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Hubo un problema al enviar tu solicitud.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   const steps = [
     { title: "Finalidad", description: "¿Para qué quieres la hipoteca?" },
     { title: "Búsqueda", description: "¿Cómo va tu búsqueda de vivienda?" },
@@ -71,26 +97,6 @@ export default function MortgageRequestForm() {
   
   // Progress calculation
   const progress = (step / steps.length) * 100
-
-  // Determine current step index relative to the dynamic steps array
-  // This logic is simple because we are just adding/removing steps from the array
-  // We need to map the linear `step` state to the correct content to render.
-  
-  // Let's redefine step rendering logic based on `step` counter
-  // Steps mapping:
-  // 1: Purpose
-  // 2: Search Status
-  // 3: Timing
-  // 4: Property Value
-  // 5: Location (Region)
-  // 6: Holders (1 or 2)
-  // 7: Holder 1 Contract
-  // 8: Holder 1 Income
-  // 9: Holder 2 Contract (if holders=2) OR Savings (if holders=1)
-  // ... and so on.
-  
-  // It's cleaner to keep `step` as a simple index into the `steps` array
-  // and render content based on the *title* or *id* of the current step from the array.
   
   const currentStepData = steps[step - 1] || steps[0]
 
@@ -313,8 +319,12 @@ export default function MortgageRequestForm() {
                   </Label>
                 </div>
 
-                 <Button className="w-full h-14 text-lg bg-secondary hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg mt-4">
-                    Ver ofertas personalizadas
+                 <Button 
+                   onClick={handleSubmit} 
+                   disabled={isSubmitting}
+                   className="w-full h-14 text-lg bg-secondary hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg mt-4 disabled:opacity-50"
+                 >
+                    {isSubmitting ? "Enviando..." : "Ver ofertas personalizadas"}
                  </Button>
               </div>
             )}
