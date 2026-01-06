@@ -14,7 +14,7 @@ export function BankLogo({ name, file }: BankLogoProps) {
   return (
     <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 w-full h-20 flex items-center justify-center relative hover:shadow-md transition-all duration-300 group">
       {!error ? (
-        <div className="relative w-full h-full opacity-60 grayscale transition-all duration-300 group-hover:grayscale-0 group-hover:opacity-100">
+        <div className="relative w-full h-full">
           <Image
             src={`/banks/${file}`}
             alt={name}
