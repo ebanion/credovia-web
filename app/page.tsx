@@ -24,16 +24,37 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white font-sans text-slate-600">
       
       {/* 1. Header Simple */}
-      <header className="bg-white py-6 border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 flex justify-center">
-          <Image src="/logo-credovia-official.png" alt="Credovia Logo" width={300} height={75} className="h-16 w-auto" />
+      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100 shadow-sm transition-all duration-200">
+        <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+          <Link href="/" className="group flex items-center gap-2 p-2 rounded-xl hover:bg-slate-50/50 transition-all duration-200">
+            <div className="relative h-10 w-auto aspect-[4/1] transition-opacity group-hover:opacity-90">
+              <Image 
+                src="/logo-credovia-official.png" 
+                alt="Credovia" 
+                fill
+                priority
+                className="object-contain object-left"
+                sizes="(max-width: 768px) 120px, 160px"
+              />
+            </div>
+          </Link>
+          
+          {/* Optional: Add navigation or CTA here if needed */}
+          <div className="hidden md:flex items-center gap-4">
+             <Button variant="ghost" className="text-slate-600 hover:text-primary font-medium">
+                Hipotecas
+             </Button>
+             <Button className="bg-primary text-white hover:bg-primary/90 font-medium rounded-full px-6">
+                Empezar ahora
+             </Button>
+          </div>
         </div>
       </header>
 
       {/* 2. Hero Section */}
-      <section className="relative pt-12 pb-20 overflow-hidden">
+      <section className="relative pt-8 pb-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="text-center max-w-4xl mx-auto mb-12">
+          <div className="text-center max-w-4xl mx-auto mb-12 pt-8">
             <h1 className="text-4xl md:text-6xl font-extrabold text-primary mb-6 leading-tight">
               La manera más rápida y cómoda de conseguir tu <span className="relative inline-block">
                 hipoteca
