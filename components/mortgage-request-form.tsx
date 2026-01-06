@@ -77,7 +77,7 @@ export default function MortgageRequestForm() {
             {step === 1 && (
               <div className="grid md:grid-cols-1 gap-4">
                 <OptionButton 
-                  label="Nueva hipoteca" 
+                  label="Simula tu hipoteca" 
                   selected={formData.purpose === "new"}
                   onClick={() => handleSelection("purpose", "new")}
                 />
