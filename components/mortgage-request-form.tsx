@@ -328,7 +328,14 @@ export default function MortgageRequestForm() {
             )}
 
             {currentStepData.title === "Contacto" && (
-              <div className="space-y-4">
+              <form 
+                onSubmit={(e) => { 
+                  e.preventDefault(); 
+                  console.log("Form submitted via onSubmit");
+                  handleSubmit(); 
+                }} 
+                className="space-y-4"
+              >
                 <div className="space-y-2">
                   <Label>Nombre completo</Label>
                   <Input 
@@ -370,13 +377,13 @@ export default function MortgageRequestForm() {
                 </div>
 
                  <Button 
-                   onClick={handleSubmit} 
+                   type="submit"
                    disabled={isSubmitting}
                    className="w-full h-14 text-lg bg-secondary hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg mt-4 disabled:opacity-50"
                  >
                     {isSubmitting ? "Enviando..." : "Ver ofertas personalizadas"}
                  </Button>
-              </div>
+              </form>
             )}
 
           </CardContent>
