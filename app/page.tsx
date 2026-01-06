@@ -24,43 +24,36 @@ export default function LandingPage() {
     <div className="min-h-screen bg-white font-sans text-slate-600">
       
       {/* 1. Header Simple */}
-      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100 shadow-sm transition-all duration-200 h-24">
-        <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
-          <Link href="/" className="group flex items-center gap-2 p-2 rounded-xl transition-all duration-200 hover:opacity-90">
-            <div className="relative h-12 w-[200px] sm:w-[220px] md:h-14 md:w-[260px]">
+      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100 shadow-sm transition-all duration-200 h-32 md:h-40">
+        <div className="max-w-7xl mx-auto px-4 h-full flex flex-col justify-center items-center">
+          <Link href="/" className="group flex flex-col items-center gap-2 p-2 rounded-xl transition-all duration-200 hover:opacity-90">
+            <div className="relative h-16 w-[240px] sm:w-[300px] md:h-20 md:w-[340px]">
               <Image 
                 src="/logo-credovia-official.png" 
                 alt="Credovia" 
                 fill
                 priority
-                className="object-contain object-left"
-                sizes="(max-width: 640px) 200px, (max-width: 768px) 220px, 260px"
+                className="object-contain object-center"
+                sizes="(max-width: 640px) 240px, (max-width: 768px) 300px, 340px"
               />
             </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-primary tracking-tight mt-2">
+              Credovia
+            </h1>
           </Link>
-          
-          {/* Optional: Add navigation or CTA here if needed */}
-          <div className="hidden md:flex items-center gap-4">
-             <Button variant="ghost" className="text-slate-600 hover:text-primary font-medium">
-                Hipotecas
-             </Button>
-             <Button className="bg-primary text-white hover:bg-primary/90 font-medium rounded-full px-6">
-                Empezar ahora
-             </Button>
-          </div>
         </div>
       </header>
 
       {/* 2. Hero Section */}
       <section className="relative pt-8 pb-20 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="text-center max-w-4xl mx-auto mb-12 pt-12">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-primary mb-6 leading-tight">
+          <div className="text-center max-w-4xl mx-auto mb-12 pt-8">
+            <h2 className="text-4xl md:text-6xl font-extrabold text-primary mb-6 leading-tight">
               La manera más rápida y cómoda de conseguir tu <span className="relative inline-block">
                 hipoteca
                 <span className="absolute bottom-1 left-0 w-full h-2 bg-secondary/30 -rotate-1 rounded-full"></span>
               </span>
-            </h1>
+            </h2>
             <p className="text-xl md:text-2xl text-slate-500 font-medium">
               Nuestros expertos encuentran la mejor hipoteca para ti gratis y sin compromiso
             </p>
