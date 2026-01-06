@@ -80,6 +80,7 @@ export default function MortgageRequestForm() {
                   label="Simula tu hipoteca" 
                   selected={formData.purpose === "new"}
                   onClick={() => handleSelection("purpose", "new")}
+                  className="text-center justify-center text-xl font-bold text-primary border-primary hover:bg-primary/5 h-20"
                 />
               </div>
             )}
@@ -238,15 +239,15 @@ export default function MortgageRequestForm() {
   )
 }
 
-function OptionButton({ label, selected, onClick }: { label: string, selected: boolean, onClick: () => void }) {
+function OptionButton({ label, selected, onClick, className }: { label: string, selected: boolean, onClick: () => void, className?: string }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full p-4 rounded-lg border-2 text-left transition-all duration-200 font-medium text-lg
+      className={`w-full p-4 rounded-lg border-2 text-left transition-all duration-200 font-medium text-lg flex items-center
         ${selected 
           ? "border-secondary bg-emerald-50 text-secondary shadow-sm" 
           : "border-slate-200 bg-white text-slate-700 hover:border-emerald-200 hover:bg-slate-50"
-        }`}
+        } ${className || ""}`}
     >
       {label}
     </button>
