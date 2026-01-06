@@ -376,13 +376,20 @@ export default function MortgageRequestForm() {
                   </Label>
                 </div>
 
-                 <Button 
-                   type="submit"
+                 {/* Debug Button - Native HTML to rule out UI library issues */}
+                 <button
+                   type="button"
+                   onClick={(e) => {
+                     e.preventDefault();
+                     e.stopPropagation();
+                     console.log("Native button clicked");
+                     handleSubmit();
+                   }}
                    disabled={isSubmitting}
-                   className="w-full h-14 text-lg bg-secondary hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg mt-4 disabled:opacity-50"
+                   style={{ backgroundColor: 'red', color: 'white', padding: '20px', width: '100%', fontSize: '20px', fontWeight: 'bold', borderRadius: '8px', marginTop: '20px', cursor: 'pointer', zIndex: 9999, position: 'relative' }}
                  >
-                    {isSubmitting ? "Enviando..." : "Ver ofertas personalizadas"}
-                 </Button>
+                    {isSubmitting ? "ENVIANDO..." : "CLICK AQUÍ PARA ENVIAR (DEBUG)"}
+                 </button>
               </form>
             )}
 
