@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
     const { data, error } = await resend.emails.send({
       from: 'Credovia Web <onboarding@resend.dev>', // Usaremos el dominio de pruebas de Resend inicialmente
-      to: ['ebanonrodriguez@gesternova.com'], // Aquí deberías poner tu email real, o usar una variable de entorno
+      to: ['credovia.hogar@gmail.com'], // Email verificado en Resend
       subject: `Nueva solicitud de hipoteca de ${contact.name}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
