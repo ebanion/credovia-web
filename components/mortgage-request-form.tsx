@@ -78,7 +78,8 @@ export default function MortgageRequestForm() {
       } else {
         const errorData = await response.json().catch(() => ({}))
         console.error('Submission error:', errorData)
-        alert('Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo.')
+        const errorMessage = errorData.error || 'Error desconocido';
+        alert(`Error: ${errorMessage}`)
       }
     } catch (error) {
       console.error('Network error:', error)

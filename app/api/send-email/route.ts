@@ -4,13 +4,18 @@ import { Resend } from 'resend';
 export async function POST(request: Request) {
   try {
     const apiKey = process.env.RESEND_API_KEY;
+    console.log('API Route called. API Key present:', !!apiKey);
+    
     if (!apiKey) {
       console.error('RESEND_API_KEY is missing');
-      return NextResponse.json({ error: 'Server misconfiguration: Missing API Key' }, { status: 500 });
+      return NextResponse.json({ 
+        error: 'Server configuration error: Missing API Key. Please restart the server.' 
+      }, { status: 500 });
     }
 
     const resend = new Resend(apiKey);
     const body = await request.json();
+    console.log('Request body received:', JSON.stringify(body, null, 2));
     const { 
       purpose, 
       searchStatus, 
