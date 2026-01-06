@@ -324,9 +324,6 @@ export default function LandingPage() {
                   <Button className="w-full bg-white text-secondary border-2 border-secondary hover:bg-secondary hover:text-white h-14 text-lg font-bold shadow-sm">
                     Nueva Hipoteca
                   </Button>
-                  <Button className="w-full bg-white text-primary border-2 border-primary hover:bg-primary hover:text-white h-14 text-lg font-bold shadow-sm">
-                    Mejorar mi hipoteca
-                  </Button>
                 </div>
             </div>
          </div>
