@@ -12,6 +12,7 @@ import { ArrowLeft } from "lucide-react"
 export default function MortgageRequestForm() {
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [privacyAccepted, setPrivacyAccepted] = useState(false)
   const [formData, setFormData] = useState({
     purpose: "",
     searchStatus: "",
@@ -54,7 +55,14 @@ export default function MortgageRequestForm() {
   }
 
   const handleSubmit = async () => {
+    if (!privacyAccepted) {
+      alert("Debes aceptar la política de privacidad para continuar.")
+      return
+    }
+
     setIsSubmitting(true)
+    console.log('Sending form data...', formData)
+
     try {
       const response = await fetch('/api/send-email', {
         method: 'POST',
@@ -68,11 +76,13 @@ export default function MortgageRequestForm() {
         alert('¡Solicitud enviada! Nos pondremos en contacto contigo pronto.')
         // Optionally reset form or redirect here
       } else {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Submission error:', errorData)
         alert('Hubo un problema al enviar tu solicitud. Por favor, inténtalo de nuevo.')
       }
     } catch (error) {
-      console.error('Error:', error)
-      alert('Hubo un problema al enviar tu solicitud.')
+      console.error('Network error:', error)
+      alert('Hubo un problema de conexión al enviar tu solicitud.')
     } finally {
       setIsSubmitting(false)
     }
@@ -313,7 +323,13 @@ export default function MortgageRequestForm() {
                 </div>
 
                 <div className="flex items-start space-x-3 pt-2">
-                  <input type="checkbox" className="mt-1 w-4 h-4 rounded border-slate-300 text-secondary focus:ring-secondary" id="privacy" />
+                  <input 
+                    type="checkbox" 
+                    className="mt-1 w-4 h-4 rounded border-slate-300 text-secondary focus:ring-secondary" 
+                    id="privacy" 
+                    checked={privacyAccepted}
+                    onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                  />
                   <Label htmlFor="privacy" className="text-xs text-slate-500 font-normal leading-relaxed cursor-pointer">
                     Acepto la <span className="underline">política de privacidad</span> y las condiciones legales.
                   </Label>
