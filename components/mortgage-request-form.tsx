@@ -9,7 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { ArrowLeft, Calculator } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { CalculatorsGrid } from "./calculators/CalculatorsGrid"
+import dynamic from 'next/dynamic'
+
+// Dynamically import CalculatorsGrid to avoid circular dependency issues
+const CalculatorsGrid = dynamic(() => 
+  import('./calculators/CalculatorsGrid').then(mod => mod.CalculatorsGrid),
+  { loading: () => <div className="p-8 text-center text-slate-500">Cargando calculadoras...</div> }
+)
 
 export default function MortgageRequestForm() {
   const { toast } = useToast()
