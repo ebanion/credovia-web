@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import MortgageRequestForm from "@/components/mortgage-request-form"
 import { BankLogo } from "@/components/bank-logo"
-import { CalculatorsSection } from "@/components/calculators/CalculatorsSection"
 import {
   Clock,
   PiggyBank,
@@ -336,9 +335,6 @@ export default function LandingPage() {
             </div>
          </div>
       </section>
-
-      {/* Calculators Section */}
-      <CalculatorsSection />
 
       {/* 7. Footer */}
       <footer className="bg-primary text-white py-16">
