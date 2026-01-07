@@ -4,11 +4,17 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Calculator, Wallet, Percent, FileText, X } from "lucide-react"
-import { QuotaCalculator } from "./QuotaCalculator"
-import { ExpensesCalculator } from "./ExpensesCalculator"
-import { FixedMixedCalculator } from "./FixedMixedCalculator"
-import { AmortizationCalculator } from "./AmortizationCalculator"
+// import { QuotaCalculator } from "./QuotaCalculator"
+// import { ExpensesCalculator } from "./ExpensesCalculator"
+// import { FixedMixedCalculator } from "./FixedMixedCalculator"
+// import { AmortizationCalculator } from "./AmortizationCalculator"
 import { cn } from "@/lib/utils"
+
+// Placeholder components to isolate the crash
+const QuotaCalculator = () => <div className="p-4 text-center">Calculadora Cuota (WIP)</div>
+const ExpensesCalculator = () => <div className="p-4 text-center">Calculadora Gastos (WIP)</div>
+const FixedMixedCalculator = () => <div className="p-4 text-center">Calculadora Fija/Mixta (WIP)</div>
+const AmortizationCalculator = () => <div className="p-4 text-center">Calculadora Amortización (WIP)</div>
 
 export function CalculatorsGrid({ compact = false }: { compact?: boolean }) {
   const [activeCalc, setActiveCalc] = useState<string | null>(null)
