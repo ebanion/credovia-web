@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Calculator, Wallet, Percent, Table2, X } from "lucide-react"
+import { Calculator, Wallet, Percent, Table, X } from "lucide-react"
 import { QuotaCalculator } from "./QuotaCalculator"
 import { ExpensesCalculator } from "./ExpensesCalculator"
 import { FixedMixedCalculator } from "./FixedMixedCalculator"
@@ -11,6 +11,7 @@ import { AmortizationCalculator } from "./AmortizationCalculator"
 import { cn } from "@/lib/utils"
 
 export function CalculatorsGrid({ compact = false }: { compact?: boolean }) {
+  console.log("Rendering CalculatorsGrid", { compact })
   const [activeCalc, setActiveCalc] = useState<string | null>(null)
 
   const calculators = [
@@ -45,7 +46,7 @@ export function CalculatorsGrid({ compact = false }: { compact?: boolean }) {
       id: "amortization",
       title: "Amortización",
       description: "Consulta una tabla de amortización aproximada",
-      icon: Table2,
+      icon: Table,
       component: AmortizationCalculator,
       color: "text-orange-600",
       bg: "bg-orange-50"
