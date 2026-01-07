@@ -11,25 +11,31 @@ import { ArrowLeft, Calculator } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import dynamic from 'next/dynamic'
 
-// Dynamically import CalculatorsGrid to avoid circular dependency issues
-const CalculatorsGrid = dynamic(() => 
-  import('@/components/calculators/CalculatorsGrid').then(mod => mod.CalculatorsGrid),
-  { 
-    loading: () => <div className="p-8 text-center text-slate-500">Cargando calculadoras...</div>,
-    ssr: false
-  }
-)
+// import dynamic from 'next/dynamic'
+import { useRouter } from "next/navigation"
+
+// Removed dynamic import completely as we are now using a separate page
+// const CalculatorsGrid = dynamic(() => 
+//   import('@/components/calculators/CalculatorsGrid').then(mod => mod.CalculatorsGrid),
+//   { 
+//     loading: () => <div className="p-8 text-center text-slate-500">Cargando calculadoras...</div>,
+//     ssr: false
+//   }
+// )
 
 export default function MortgageRequestForm() {
   const { toast } = useToast()
+  const router = useRouter()
+  // ...
   const [step, setStep] = useState(1)
-  const [showCalculators, setShowCalculators] = useState(false)
-  const [isCalculatorsMounted, setIsCalculatorsMounted] = useState(false) // Force client-side logic
+  // Removed internal state for calculators display
+  // const [showCalculators, setShowCalculators] = useState(false)
+  // const [isCalculatorsMounted, setIsCalculatorsMounted] = useState(false)
   
   // Handlers for mounting
   const handleShowCalculators = () => {
-    setIsCalculatorsMounted(true)
-    setShowCalculators(true)
+    // Navigate to the new calculators page instead of showing inline
+    router.push("/calculadoras")
   }
 
   // ... (rest of the file)
@@ -37,29 +43,8 @@ export default function MortgageRequestForm() {
   const [privacyAccepted, setPrivacyAccepted] = useState(false)
   // ... rest of state
   
-  // If showing calculators, render that view instead of the form
-  if (showCalculators && isCalculatorsMounted) {
-    return (
-      <div className="max-w-4xl mx-auto py-8 px-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Calculadoras</h2>
-            <p className="text-slate-500">Herramientas rápidas para estimar tu hipoteca</p>
-          </div>
-          <Card className="border-0 shadow-lg p-6 bg-white rounded-2xl">
-            <CardContent className="space-y-6 px-0 pb-0">
-               <CalculatorsGrid compact={true} />
-            </CardContent>
-            <div className="px-0 pt-6 flex justify-start">
-              <Button variant="ghost" onClick={() => setShowCalculators(false)} className="text-slate-400 hover:text-slate-600 pl-0 hover:bg-transparent">
-                <ArrowLeft className="mr-2 w-4 h-4" /> Volver al formulario
-              </Button>
-            </div>
-          </Card>
-        </div>
-      </div>
-    )
-  }
+  // Removed the inline rendering logic for calculators
+  // if (showCalculators && isCalculatorsMounted) { ... }
 
   // Normal Form Logic
   const [formData, setFormData] = useState({
