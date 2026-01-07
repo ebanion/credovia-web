@@ -3,11 +3,7 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Calculator, Wallet, Percent, FileText, X } from "lucide-react"
-// import { QuotaCalculator } from "./QuotaCalculator"
-// import { ExpensesCalculator } from "./ExpensesCalculator"
-// import { FixedMixedCalculator } from "./FixedMixedCalculator"
-// import { AmortizationCalculator } from "./AmortizationCalculator"
+import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // Placeholder components to isolate the crash
@@ -15,6 +11,12 @@ const QuotaCalculator = () => <div className="p-4 text-center">Calculadora Cuota
 const ExpensesCalculator = () => <div className="p-4 text-center">Calculadora Gastos (WIP)</div>
 const FixedMixedCalculator = () => <div className="p-4 text-center">Calculadora Fija/Mixta (WIP)</div>
 const AmortizationCalculator = () => <div className="p-4 text-center">Calculadora Amortización (WIP)</div>
+
+// Fallback Icons to avoid lucide import issues
+const CalculatorIcon = (props: any) => <span {...props}>🔢</span>
+const WalletIcon = (props: any) => <span {...props}>💰</span>
+const PercentIcon = (props: any) => <span {...props}>%</span>
+const FileTextIcon = (props: any) => <span {...props}>📄</span>
 
 export function CalculatorsGrid({ compact = false }: { compact?: boolean }) {
   const [activeCalc, setActiveCalc] = useState<string | null>(null)
@@ -24,7 +26,7 @@ export function CalculatorsGrid({ compact = false }: { compact?: boolean }) {
       id: "quota",
       title: "Cuota Mensual",
       description: "Calcula tu cuota mensual en segundos",
-      icon: Calculator,
+      icon: CalculatorIcon,
       component: QuotaCalculator,
       color: "text-blue-600",
       bg: "bg-blue-50"
@@ -33,7 +35,7 @@ export function CalculatorsGrid({ compact = false }: { compact?: boolean }) {
       id: "expenses",
       title: "Gastos Compra",
       description: "Estima gastos de compra de forma orientativa",
-      icon: Wallet,
+      icon: WalletIcon,
       component: ExpensesCalculator,
       color: "text-emerald-600",
       bg: "bg-emerald-50"
@@ -42,7 +44,7 @@ export function CalculatorsGrid({ compact = false }: { compact?: boolean }) {
       id: "compare",
       title: "Fija vs Mixta",
       description: "Compara fijo vs mixta de forma rápida",
-      icon: Percent,
+      icon: PercentIcon,
       component: FixedMixedCalculator,
       color: "text-purple-600",
       bg: "bg-purple-50"
@@ -51,7 +53,7 @@ export function CalculatorsGrid({ compact = false }: { compact?: boolean }) {
       id: "amortization",
       title: "Amortización",
       description: "Consulta una tabla de amortización aproximada",
-      icon: FileText,
+      icon: FileTextIcon,
       component: AmortizationCalculator,
       color: "text-orange-600",
       bg: "bg-orange-50"
