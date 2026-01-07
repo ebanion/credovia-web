@@ -14,7 +14,10 @@ import dynamic from 'next/dynamic'
 // Dynamically import CalculatorsGrid to avoid circular dependency issues
 const CalculatorsGrid = dynamic(() => 
   import('./calculators/CalculatorsGrid').then(mod => mod.CalculatorsGrid),
-  { loading: () => <div className="p-8 text-center text-slate-500">Cargando calculadoras...</div> }
+  { 
+    loading: () => <div className="p-8 text-center text-slate-500">Cargando calculadoras...</div>,
+    ssr: false // Disable SSR for this component to avoid hydration mismatches
+  }
 )
 
 export default function MortgageRequestForm() {
