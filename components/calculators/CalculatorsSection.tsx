@@ -10,7 +10,7 @@ import { FixedMixedCalculator } from "./FixedMixedCalculator"
 import { AmortizationCalculator } from "./AmortizationCalculator"
 import { cn } from "@/lib/utils"
 
-export function CalculatorsSection() {
+export function CalculatorsGrid({ compact = false }: { compact?: boolean }) {
   const [activeCalc, setActiveCalc] = useState<string | null>(null)
 
   const calculators = [
@@ -56,14 +56,8 @@ export function CalculatorsSection() {
   const activeData = calculators.find(c => c.id === activeCalc)
 
   return (
-    <section className="py-16 bg-white border-t border-slate-100 scroll-mt-20" id="calculadoras">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-slate-900 mb-2">Calculadoras</h2>
-          <p className="text-lg text-slate-500">Herramientas rápidas para estimar tu hipoteca</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="w-full">
+      <div className={cn("grid gap-4 mb-4", compact ? "grid-cols-2" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4")}>
           {calculators.map((calc) => (
             <Card 
               key={calc.id} 
@@ -73,46 +67,61 @@ export function CalculatorsSection() {
               )}
               onClick={() => setActiveCalc(activeCalc === calc.id ? null : calc.id)}
             >
-              <CardHeader className="space-y-1">
-                <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center mb-2", calc.bg)}>
-                  <calc.icon className={cn("w-5 h-5", calc.color)} />
+              <CardHeader className="space-y-1 p-4">
+                <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center mb-2", calc.bg)}>
+                  <calc.icon className={cn("w-4 h-4", calc.color)} />
                 </div>
-                <CardTitle className="text-lg">{calc.title}</CardTitle>
-                <CardDescription>{calc.description}</CardDescription>
+                <CardTitle className="text-sm font-bold">{calc.title}</CardTitle>
+                {!compact && <CardDescription className="text-xs">{calc.description}</CardDescription>}
               </CardHeader>
-              <CardContent>
-                <Button 
-                  variant={activeCalc === calc.id ? "default" : "outline"} 
-                  className="w-full"
-                >
-                  {activeCalc === calc.id ? "Cerrar" : "Abrir"}
-                </Button>
-              </CardContent>
+              {!compact && (
+                <CardContent className="p-4 pt-0">
+                  <Button 
+                    variant={activeCalc === calc.id ? "default" : "outline"} 
+                    className="w-full h-8 text-xs"
+                  >
+                    {activeCalc === calc.id ? "Cerrar" : "Abrir"}
+                  </Button>
+                </CardContent>
+              )}
             </Card>
           ))}
-        </div>
+      </div>
 
-        {/* Inline Expandable Panel */}
-        {activeCalc && ActiveComponent && (
-          <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-            <div className="max-w-3xl mx-auto bg-white border-2 border-slate-100 rounded-2xl shadow-xl overflow-hidden relative">
-               <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                 <div className="flex items-center gap-3">
-                    <div className={cn("w-8 h-8 rounded-md flex items-center justify-center", activeData?.bg)}>
-                      {activeData?.icon && <activeData.icon className={cn("w-4 h-4", activeData?.color)} />}
-                    </div>
-                    <h3 className="font-bold text-xl text-slate-800">{activeData?.title}</h3>
-                 </div>
-                 <Button variant="ghost" size="icon" onClick={() => setActiveCalc(null)}>
-                   <X className="w-5 h-5 text-slate-400" />
-                 </Button>
-               </div>
-               <div className="p-6">
-                 <ActiveComponent />
-               </div>
-            </div>
+      {/* Inline Expandable Panel */}
+      {activeCalc && ActiveComponent && (
+        <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="bg-white border-2 border-slate-100 rounded-xl shadow-lg overflow-hidden relative">
+              <div className="bg-slate-50 px-4 py-3 border-b border-slate-100 flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                  <div className={cn("w-6 h-6 rounded-md flex items-center justify-center", activeData?.bg)}>
+                    {activeData?.icon && <activeData.icon className={cn("w-3 h-3", activeData?.color)} />}
+                  </div>
+                  <h3 className="font-bold text-sm text-slate-800">{activeData?.title}</h3>
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => setActiveCalc(null)} className="h-6 w-6">
+                  <X className="w-4 h-4 text-slate-400" />
+                </Button>
+              </div>
+              <div className="p-4">
+                <ActiveComponent />
+              </div>
           </div>
-        )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function CalculatorsSection() {
+  return (
+    <section className="py-16 bg-white border-t border-slate-100 scroll-mt-20" id="calculadoras">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-slate-900 mb-2">Calculadoras</h2>
+          <p className="text-lg text-slate-500">Herramientas rápidas para estimar tu hipoteca</p>
+        </div>
+        <CalculatorsGrid />
       </div>
     </section>
   )

@@ -7,14 +7,43 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Calculator } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
+import { CalculatorsGrid } from "./calculators/CalculatorsSection"
 
 export default function MortgageRequestForm() {
   const { toast } = useToast()
   const [step, setStep] = useState(1)
+  const [showCalculators, setShowCalculators] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [privacyAccepted, setPrivacyAccepted] = useState(false)
+  // ... rest of state
+  
+  // If showing calculators, render that view instead of the form
+  if (showCalculators) {
+    return (
+      <div className="max-w-4xl mx-auto py-8 px-4">
+        <div className="max-w-2xl mx-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Calculadoras</h2>
+            <p className="text-slate-500">Herramientas rápidas para estimar tu hipoteca</p>
+          </div>
+          <Card className="border-0 shadow-lg p-6 bg-white rounded-2xl">
+            <CardContent className="space-y-6 px-0 pb-0">
+               <CalculatorsGrid compact={true} />
+            </CardContent>
+            <div className="px-0 pt-6 flex justify-start">
+              <Button variant="ghost" onClick={() => setShowCalculators(false)} className="text-slate-400 hover:text-slate-600 pl-0 hover:bg-transparent">
+                <ArrowLeft className="mr-2 w-4 h-4" /> Volver al formulario
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  // Normal Form Logic
   const [formData, setFormData] = useState({
     purpose: "",
     searchStatus: "",
@@ -176,6 +205,14 @@ export default function MortgageRequestForm() {
                   onClick={() => handleSelection("purpose", "new")}
                   className="text-center justify-center text-xl font-bold text-primary border-primary hover:bg-primary/5 h-20"
                 />
+                <Button 
+                   variant="outline"
+                   className="w-full h-14 text-lg font-bold text-slate-600 border-2 hover:bg-slate-50 hover:text-primary gap-2"
+                   onClick={() => setShowCalculators(true)}
+                >
+                   <Calculator className="w-5 h-5" />
+                   Calculadoras
+                </Button>
               </div>
             )}
 
