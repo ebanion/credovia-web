@@ -24,12 +24,21 @@ export default function MortgageRequestForm() {
   const { toast } = useToast()
   const [step, setStep] = useState(1)
   const [showCalculators, setShowCalculators] = useState(false)
+  const [isCalculatorsMounted, setIsCalculatorsMounted] = useState(false) // Force client-side logic
+  
+  // Handlers for mounting
+  const handleShowCalculators = () => {
+    setIsCalculatorsMounted(true)
+    setShowCalculators(true)
+  }
+
+  // ... (rest of the file)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [privacyAccepted, setPrivacyAccepted] = useState(false)
   // ... rest of state
   
   // If showing calculators, render that view instead of the form
-  if (showCalculators) {
+  if (showCalculators && isCalculatorsMounted) {
     return (
       <div className="max-w-4xl mx-auto py-8 px-4">
         <div className="max-w-2xl mx-auto">
@@ -217,7 +226,7 @@ export default function MortgageRequestForm() {
                 <Button 
                    variant="outline"
                    className="w-full h-14 text-lg font-bold text-slate-600 border-2 hover:bg-slate-50 hover:text-primary gap-2"
-                   onClick={() => setShowCalculators(true)}
+                   onClick={handleShowCalculators}
                 >
                    <Calculator className="w-5 h-5" />
                    Calculadoras
