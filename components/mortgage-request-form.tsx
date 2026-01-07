@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { ArrowLeft, Calculator } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { CalculatorsGrid } from "./calculators/CalculatorsSection"
+import { CalculatorsGrid } from "./calculators/CalculatorsGrid"
 
 export default function MortgageRequestForm() {
   const { toast } = useToast()
