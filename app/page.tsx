@@ -31,8 +31,8 @@ const BANKS = [
   { name: "EVO", file: "evo.png" },
   { name: "Unicaja", file: "unicaja.png" },
   { name: "Ibercaja", file: "ibercaja.png" },
-  { name: "Deutsche Bank", file: "deustchebank.png" },
-  { name: "Kutxabank", file: "Kutxabank.png" },
+  { name: "Deutsche Bank", file: "deutsche.png" },
+  { name: "Kutxabank", file: "kutxabank.png" },
 ]
 
 export default function LandingPage() {
