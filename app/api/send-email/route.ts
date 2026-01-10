@@ -64,12 +64,14 @@ export async function POST(request: Request) {
             <p><strong>Hijos a cargo:</strong> ${children >= 5 ? '5 o más' : children}</p>
             
             <h3 style="color: #6b7280; font-size: 14px; text-transform: uppercase;">Titular 1</h3>
+            <p><strong>Edad:</strong> ${holder1.age}</p>
             <p><strong>Contrato:</strong> ${holder1.contractType}</p>
             <p><strong>Ingresos:</strong> ${holder1.monthlyIncome}</p>
 
             ${holders === 2 ? `
               <div style="margin-top: 15px; border-top: 1px dashed #e5e7eb; padding-top: 15px;">
                 <h3 style="color: #6b7280; font-size: 14px; text-transform: uppercase;">Titular 2</h3>
+                <p><strong>Edad:</strong> ${holder2.age}</p>
                 <p><strong>Contrato:</strong> ${holder2.contractType}</p>
                 <p><strong>Ingresos:</strong> ${holder2.monthlyIncome}</p>
               </div>
