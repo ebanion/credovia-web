@@ -328,9 +328,11 @@ export default function LandingPage() {
             <div className="max-w-xl mx-auto p-8 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
                 <h3 className="text-xl font-bold text-slate-800 mb-6">¿Para qué quieres la hipoteca?</h3>
                 <div className="grid grid-cols-1 gap-4">
-                  <Button className="w-full bg-white text-secondary border-2 border-secondary hover:bg-secondary hover:text-white h-14 text-lg font-bold shadow-sm">
-                    Simula tu hipoteca
-                  </Button>
+                  <Link href="/simulador" className="w-full">
+                    <Button className="w-full bg-white text-secondary border-2 border-secondary hover:bg-secondary hover:text-white h-14 text-lg font-bold shadow-sm">
+                      Simula tu hipoteca
+                    </Button>
+                  </Link>
                 </div>
             </div>
          </div>

@@ -15,7 +15,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 
+import { useRouter } from "next/navigation"
+
 export default function MortgageCalculator() {
+  const router = useRouter()
   // State for inputs
   const [propertyPrice, setPropertyPrice] = useState(300000)
   const [savings, setSavings] = useState(80000)
@@ -363,7 +366,18 @@ export default function MortgageCalculator() {
                       <p className="text-center text-xs text-slate-500 mb-3 leading-tight px-4">
                         La cuota mostrada es una estimación basada en condiciones competitivas de mercado. Al continuar podremos calcularte ofertas reales adaptadas a tu perfil.
                       </p>
-                      <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-6 text-lg shadow-lg shadow-emerald-200 rounded-xl">
+                      <Button 
+                        onClick={() => {
+                          // If we are in the simulator page (which this component is part of), 
+                          // we want to switch to the request tab.
+                          // Since we implemented URL param logic in page.tsx, we can just navigate or switch tab.
+                          // But the parent is controlling the tabs. 
+                          // A simple router push to /simulador?tab=request is the safest way to reset to that tab
+                          // or just /simulador (defaults to request).
+                          router.push("/simulador?tab=request")
+                        }}
+                        className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-6 text-lg shadow-lg shadow-emerald-200 rounded-xl"
+                      >
                         Consígueme esta hipoteca
                       </Button>
                       <p className="text-center text-xs text-slate-500 mt-3">

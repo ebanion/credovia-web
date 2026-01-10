@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PROVINCES, PROVINCES_LIST } from "@/data/taxes/es"
 import { calculateMortgage } from "@/lib/mortgage-utils"
 import { Calculator, HelpCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
 import {
   Tooltip,
   TooltipContent,
@@ -28,6 +29,7 @@ const DEFAULT_EURIBOR = 2.6 // 2.6% (Consistent with other simulator)
 const DEFAULT_DIFFERENTIAL = 0.5 // 0.5%
 
 export function QuotaCalculator() {
+  const router = useRouter()
   // --- STATE ---
   const [price, setPrice] = useState<number>(300000)
   const [savings, setSavings] = useState<number>(80000)
@@ -366,7 +368,10 @@ export function QuotaCalculator() {
                 <h3 className="font-bold text-slate-800 text-lg">
                   Continúa la simulación y consigue ofertas de hipoteca de distintos bancos
                 </h3>
-                <Button className="w-full h-12 text-lg bg-secondary hover:bg-emerald-600 font-bold shadow-md">
+                <Button 
+                  className="w-full h-12 text-lg bg-secondary hover:bg-emerald-600 font-bold shadow-md"
+                  onClick={() => router.push("/simulador")}
+                >
                   Consígueme esta hipoteca
                 </Button>
                 <p className="text-xs text-slate-500">Te ayudamos - Gratis y sin compromiso</p>
