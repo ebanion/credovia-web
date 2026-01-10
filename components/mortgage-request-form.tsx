@@ -50,7 +50,7 @@ export default function MortgageRequestForm() {
   const [formData, setFormData] = useState({
     purpose: "",
     searchStatus: "",
-    timing: "",
+    // timing: "", // Removed
     propertyPrice: "",
     region: "",
     holders: 1,
@@ -63,6 +63,8 @@ export default function MortgageRequestForm() {
       monthlyIncome: ""
     },
     savings: 50000,
+    debt: 0, // Added debt
+    children: 0, // Added children
     contact: {
       name: "",
       email: "",
@@ -157,7 +159,7 @@ export default function MortgageRequestForm() {
   const steps = [
     { title: "Finalidad", description: "¿Para qué quieres la hipoteca?" },
     { title: "Búsqueda", description: "¿Cómo va tu búsqueda de vivienda?" },
-    { title: "Plazos", description: "¿Cuándo tienes previsto comprar?" },
+    // { title: "Plazos", description: "¿Cuándo tienes previsto comprar?" }, // Removed
     { title: "Valor", description: "¿Cuál es el valor de la vivienda?" },
     { title: "Ubicación", description: "¿Dónde está la vivienda?" },
     { title: "Titulares", description: "¿Cuántas personas solicitan la hipoteca?" },
@@ -168,6 +170,8 @@ export default function MortgageRequestForm() {
       { title: "Ingresos 2", description: "Ingresos netos mensuales (Titular 2)" }
     ] : []),
     { title: "Ahorros", description: "¿Cuántos ahorros aportas?" },
+    { title: "Deudas", description: "¿Tienes deudas mensuales?" }, // Added
+    { title: "Hijos", description: "¿Tienes hijos a tu cargo?" }, // Added
     { title: "Contacto", description: "Datos de contacto" },
   ]
   
@@ -232,18 +236,7 @@ export default function MortgageRequestForm() {
               </div>
             )}
 
-            {currentStepData.title === "Plazos" && (
-              <div className="grid gap-3">
-                 {["Lo antes posible", "En 3 meses", "En 6 meses", "En 1 año", "Más de 1 año"].map((option) => (
-                  <OptionButton 
-                    key={option}
-                    label={option} 
-                    selected={formData.timing === option}
-                    onClick={() => handleSelection("timing", option)}
-                  />
-                ))}
-              </div>
-            )}
+            {/* Removed Plazos Step */}
 
             {currentStepData.title === "Valor" && (
               <div className="space-y-6">
@@ -360,6 +353,54 @@ export default function MortgageRequestForm() {
                  <div className="flex justify-between text-xs text-slate-400">
                     <span>0 €</span>
                     <span>200.000 € +</span>
+                 </div>
+                 <Button onClick={handleNext} className="w-full h-14 text-lg bg-secondary hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg">
+                    Continuar
+                 </Button>
+              </div>
+            )}
+
+            {currentStepData.title === "Deudas" && (
+              <div className="space-y-8 py-4">
+                 <div className="text-center">
+                    <span className="text-4xl font-bold text-primary">{formData.debt.toLocaleString('es-ES')} €/mes</span>
+                 </div>
+                 <Slider 
+                    value={[formData.debt]} 
+                    min={0} 
+                    max={3000} 
+                    step={50} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, debt: val[0] }))}
+                    className="py-4"
+                 />
+                 <div className="flex justify-between text-xs text-slate-400">
+                    <span>0 €</span>
+                    <span>3.000 € +</span>
+                 </div>
+                 <Button onClick={handleNext} className="w-full h-14 text-lg bg-secondary hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg">
+                    Continuar
+                 </Button>
+              </div>
+            )}
+
+            {currentStepData.title === "Hijos" && (
+              <div className="space-y-8 py-4">
+                 <div className="text-center">
+                    <span className="text-4xl font-bold text-primary">
+                      {formData.children >= 5 ? "5 o más" : formData.children}
+                    </span>
+                 </div>
+                 <Slider 
+                    value={[formData.children]} 
+                    min={0} 
+                    max={5} 
+                    step={1} 
+                    onValueChange={(val) => setFormData(prev => ({ ...prev, children: val[0] }))}
+                    className="py-4"
+                 />
+                 <div className="flex justify-between text-xs text-slate-400">
+                    <span>0</span>
+                    <span>5+</span>
                  </div>
                  <Button onClick={handleNext} className="w-full h-14 text-lg bg-secondary hover:bg-emerald-600 text-white font-bold rounded-lg shadow-lg">
                     Continuar

@@ -19,13 +19,15 @@ export async function POST(request: Request) {
     const { 
       purpose, 
       searchStatus, 
-      timing, 
+      // timing, // Removed
       propertyPrice, 
       region, 
       holders, 
       holder1, 
       holder2, 
-      savings, 
+      savings,
+      debt, // Added
+      children, // Added
       contact 
     } = body;
 
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
             <h2 style="color: #0d3b91; margin-top: 0;">Detalles de la Operación</h2>
             <p><strong>Finalidad:</strong> ${purpose === 'new' ? 'Nueva Hipoteca' : 'Mejorar Hipoteca'}</p>
             <p><strong>Estado búsqueda:</strong> ${searchStatus}</p>
-            <p><strong>Plazo previsto:</strong> ${timing}</p>
+            
             <p><strong>Valor vivienda:</strong> ${propertyPrice}</p>
             <p><strong>Ubicación:</strong> ${region}</p>
             <p><strong>Ahorros aportados:</strong> ${savings} €</p>
@@ -58,6 +60,8 @@ export async function POST(request: Request) {
           <div style="border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px;">
             <h2 style="color: #0d3b91; margin-top: 0;">Datos Económicos</h2>
             <p><strong>Número de titulares:</strong> ${holders}</p>
+            <p><strong>Deudas mensuales:</strong> ${debt} €/mes</p>
+            <p><strong>Hijos a cargo:</strong> ${children >= 5 ? '5 o más' : children}</p>
             
             <h3 style="color: #6b7280; font-size: 14px; text-transform: uppercase;">Titular 1</h3>
             <p><strong>Contrato:</strong> ${holder1.contractType}</p>
