@@ -43,10 +43,10 @@ export default function MortgageCalculator() {
   const MAX_TERM = 30
   
   // Interest rates (mock data - constants)
-  const FIXED_RATE = 1.74 // 1.74% TIN
-  const VARIABLE_RATE_FIRST_YEAR = 1.05
+  const FIXED_RATE = 2.25 // 2.25% TIN (Updated for commercial/simulator)
+  const VARIABLE_RATE_FIRST_YEAR = 2.25 // 2.25% Initial TIN
   const EURIBOR = 2.6 // Example Euribor
-  const SPREAD = 0.61 // Differential
+  const SPREAD = 0.50 // Differential 0.5%
 
   useEffect(() => {
     updateMortgage()
@@ -233,7 +233,12 @@ export default function MortgageCalculator() {
                       
                       <div className="flex justify-between items-center text-sm">
                         <span className="font-bold text-slate-700">TIN fijo</span>
-                        <span className="font-bold text-emerald-600 text-lg">{results.tin.toFixed(2)}%</span>
+                        <div className="text-right">
+                          <span className="font-bold text-emerald-600 text-lg block">{results.tin.toFixed(2)}%</span>
+                          <span className="text-[10px] text-slate-400 font-normal leading-tight block max-w-[150px]">
+                            TIN estimado orientativo. Condiciones sujetas a perfil y banco.
+                          </span>
+                        </div>
                       </div>
                     </TabsContent>
 
@@ -241,21 +246,29 @@ export default function MortgageCalculator() {
                       <div className="text-center pb-6 border-b border-emerald-100">
                         <p className="text-slate-600 font-medium mb-1">Cuota mensual estimada</p>
                         <div className="text-5xl font-bold text-slate-900 tracking-tight">
-                          {formatCurrency(results.monthlyQuota * 0.9)} {/* Simple variable estimate */}
+                          {formatCurrency(results.monthlyQuota)} {/* Simple variable estimate */}
                           <span className="text-xl text-slate-500 font-normal ml-1">/mes</span>
                         </div>
                         <p className="text-xs text-slate-500 mt-2">* Estimación primer año</p>
                       </div>
 
-                       <div className="space-y-2">
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="font-bold text-slate-700">TIN 1º año</span>
-                          <span className="font-bold text-emerald-600 text-lg">{VARIABLE_RATE_FIRST_YEAR}%</span>
+                       <div className="space-y-4">
+                        <div className="flex justify-between items-start text-sm">
+                          <span className="font-bold text-slate-700 mt-1">TIN 1º año</span>
+                          <div className="text-right">
+                             <span className="font-bold text-emerald-600 text-lg block">{VARIABLE_RATE_FIRST_YEAR}%</span>
+                             <span className="text-[10px] text-slate-400 font-normal leading-tight block max-w-[150px]">
+                                TIN estimado orientativo.
+                             </span>
+                          </div>
                         </div>
                         <div className="flex justify-between items-center text-sm">
                           <span className="font-bold text-slate-700">TIN resto años</span>
                           <span className="font-bold text-emerald-600">Euribor + {SPREAD}%</span>
                         </div>
+                        <p className="text-[10px] text-slate-400 text-right w-full">
+                           Condiciones finales dependen de perfil y banco.
+                        </p>
                       </div>
                     </TabsContent>
 
@@ -347,6 +360,9 @@ export default function MortgageCalculator() {
                     </div>
 
                     <div className="mt-8">
+                      <p className="text-center text-xs text-slate-500 mb-3 leading-tight px-4">
+                        La cuota mostrada es una estimación basada en condiciones competitivas de mercado. Al continuar podremos calcularte ofertas reales adaptadas a tu perfil.
+                      </p>
                       <Button className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-6 text-lg shadow-lg shadow-emerald-200 rounded-xl">
                         Consígueme esta hipoteca
                       </Button>

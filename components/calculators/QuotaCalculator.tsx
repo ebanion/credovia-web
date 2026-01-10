@@ -22,9 +22,9 @@ import {
 } from "@/components/ui/tooltip"
 
 // --- CONSTANTS & DEFAULTS ---
-const DEFAULT_TIN_FIXED = 2.5 // 2.5%
-const DEFAULT_TIN_VAR_INITIAL = 2.0 // 2.0%
-const DEFAULT_EURIBOR = 3.0 // 3.0% (Simulated)
+const DEFAULT_TIN_FIXED = 2.25 // 2.25%
+const DEFAULT_TIN_VAR_INITIAL = 2.25 // 2.25%
+const DEFAULT_EURIBOR = 2.6 // 2.6% (Consistent with other simulator)
 const DEFAULT_DIFFERENTIAL = 0.5 // 0.5%
 
 export function QuotaCalculator() {
@@ -259,6 +259,9 @@ export function QuotaCalculator() {
                     <div className="text-right">
                       <p className="text-sm font-semibold text-slate-400 uppercase">TIN Fijo</p>
                       <p className="text-2xl font-bold text-slate-700">{tinFixed.toLocaleString("es-ES")}%</p>
+                      <p className="text-[10px] text-slate-400 mt-1 max-w-[150px] leading-tight ml-auto">
+                        TIN estimado orientativo. Condiciones sujetas a perfil y banco.
+                      </p>
                     </div>
                   </div>
 
@@ -304,6 +307,9 @@ export function QuotaCalculator() {
                         {calculation.quotaVarYear1.toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} €/mes
                       </p>
                       <p className="text-xs text-slate-400 mt-1">TIN {tinVarInitial}%</p>
+                      <p className="text-[10px] text-slate-400 mt-1 leading-tight max-w-[120px]">
+                        TIN estimado orientativo.
+                      </p>
                     </div>
                     <div className="text-right">
                       <p className="text-slate-500 text-sm mb-1">Resto años</p>
@@ -311,6 +317,9 @@ export function QuotaCalculator() {
                         {calculation.quotaVarRest.toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} €/mes
                       </p>
                       <p className="text-xs text-slate-400 mt-1">Euríbor + {differential}%</p>
+                      <p className="text-[10px] text-slate-400 mt-1 leading-tight">
+                         Condiciones finales según perfil.
+                      </p>
                     </div>
                   </div>
 
@@ -351,6 +360,9 @@ export function QuotaCalculator() {
               </div>
               
               <div className="bg-emerald-50 p-6 text-center space-y-4">
+                <p className="text-xs text-slate-500 leading-tight px-2">
+                   La cuota mostrada es una estimación basada en condiciones competitivas de mercado. Al continuar podremos calcularte ofertas reales adaptadas a tu perfil.
+                </p>
                 <h3 className="font-bold text-slate-800 text-lg">
                   Continúa la simulación y consigue ofertas de hipoteca de distintos bancos
                 </h3>
