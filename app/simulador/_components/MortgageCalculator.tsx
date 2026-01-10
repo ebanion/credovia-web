@@ -6,34 +6,34 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
+import { PROVINCES_LIST } from "@/data/taxes/es"
+import { calculateMortgage } from "@/lib/mortgage-utils"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { Calculator, Info, HelpCircle } from "lucide-react"
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 export default function MortgageCalculator() {
   // State for inputs
   const [propertyPrice, setPropertyPrice] = useState(300000)
   const [savings, setSavings] = useState(80000)
   const [termYears, setTermYears] = useState(25)
-  const [propertyType, setPropertyType] = useState("new") // 'new' or 'used'
-  const [region, setRegion] = useState("madrid")
+  const [propertyType, setPropertyType] = useState<"new" | "used">("new") // 'new' or 'used'
+  const [region, setRegion] = useState("Madrid")
 
   // State for results
   const [results, setResults] = useState({
     monthlyQuota: 0,
     loanAmount: 0,
-    expenses: 0,
+    expenses: { taxes: 0, notary: 0, registry: 0, agency: 0, appraisal: 0, total: 0 },
     downPayment: 0,
+    netDownPayment: 0,
     totalInterests: 0,
     tin: 0,
-    isVariable: false
+    isVariable: false,
+    taxesRate: 0
   })
 
   // Constants
@@ -42,40 +42,29 @@ export default function MortgageCalculator() {
   const MIN_TERM = 5
   const MAX_TERM = 30
   
-  // Interest rates (mock data)
+  // Interest rates (mock data - constants)
   const FIXED_RATE = 1.74 // 1.74% TIN
   const VARIABLE_RATE_FIRST_YEAR = 1.05
   const EURIBOR = 2.6 // Example Euribor
   const SPREAD = 0.61 // Differential
 
   useEffect(() => {
-    calculateMortgage()
+    updateMortgage()
   }, [propertyPrice, savings, termYears, propertyType, region])
 
-  const calculateMortgage = () => {
-    const expenseRate = propertyType === "new" ? 0.115 : 0.09
-    const expenses = Math.round(propertyPrice * expenseRate)
-    const loanAmount = (propertyPrice + expenses) - savings
-    let downPayment = savings - expenses
-    if (downPayment < 0) downPayment = 0 
-
-    const monthlyRate = (FIXED_RATE / 100) / 12
-    const totalMonths = termYears * 12
-    
-    let monthlyQuota = 0
-    let totalInterests = 0
-
-    if (loanAmount > 0) {
-      monthlyQuota = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1)
-      totalInterests = (monthlyQuota * totalMonths) - loanAmount
-    }
+  const updateMortgage = () => {
+    const calc = calculateMortgage({
+      propertyPrice,
+      savings,
+      years: termYears,
+      interestRate: FIXED_RATE, // For fixed tab logic base
+      province: region,
+      propertyType,
+      isVariable: false
+    });
 
     setResults({
-      monthlyQuota: Math.round(monthlyQuota),
-      loanAmount: loanAmount > 0 ? loanAmount : 0,
-      expenses,
-      downPayment: downPayment > 0 ? downPayment : 0,
-      totalInterests: Math.round(totalInterests),
+      ...calc,
       tin: FIXED_RATE,
       isVariable: false
     })
@@ -84,6 +73,12 @@ export default function MortgageCalculator() {
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(val)
   }
+  
+  // Re-adjust for bar view (Expenses, Loan Amount, Total Interests)
+  const barTotal = results.expenses.total + results.loanAmount + results.totalInterests;
+  const pExpenses = barTotal > 0 ? (results.expenses.total / barTotal) * 100 : 0;
+  const pLoan = barTotal > 0 ? (results.loanAmount / barTotal) * 100 : 0;
+  const pInterest = barTotal > 0 ? (results.totalInterests / barTotal) * 100 : 0;
 
   return (
     <div className="bg-slate-50 py-8">
@@ -204,11 +199,11 @@ export default function MortgageCalculator() {
                     <SelectValue placeholder="Selecciona una provincia" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="madrid">Madrid</SelectItem>
-                    <SelectItem value="barcelona">Barcelona</SelectItem>
-                    <SelectItem value="valencia">Valencia</SelectItem>
-                    <SelectItem value="sevilla">Sevilla</SelectItem>
-                    {/* Add more as needed */}
+                    {PROVINCES_LIST.map((province) => (
+                      <SelectItem key={province} value={province}>
+                        {province}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -278,15 +273,50 @@ export default function MortgageCalculator() {
                           <div className="w-3 h-3 rounded-full bg-blue-400"></div>
                           <span className="text-slate-600">Entrada</span>
                         </div>
-                        <span className="font-medium text-slate-900">{formatCurrency(results.downPayment)}</span>
+                          <span className="font-medium text-slate-900">{formatCurrency(results.netDownPayment > 0 ? results.netDownPayment : 0)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <div className="flex items-center gap-2">
                           <div className="w-3 h-3 rounded-full bg-blue-200"></div>
                           <span className="text-slate-600">Impuestos y gastos</span>
-                          <HelpCircle className="w-3 h-3 text-slate-400" />
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <HelpCircle className="w-3 h-3 text-slate-400" />
+                              </TooltipTrigger>
+                              <TooltipContent className="p-4 max-w-xs">
+                                <p className="font-bold mb-2">Desglose de gastos:</p>
+                                <div className="space-y-1 text-sm">
+                                  <div className="flex justify-between gap-4">
+                                    <span>Impuestos ({results.taxesRate}%):</span>
+                                    <span>{formatCurrency(results.expenses.taxes)}</span>
+                                  </div>
+                                  <div className="flex justify-between gap-4">
+                                    <span>Notaría:</span>
+                                    <span>{formatCurrency(results.expenses.notary)}</span>
+                                  </div>
+                                  <div className="flex justify-between gap-4">
+                                    <span>Registro:</span>
+                                    <span>{formatCurrency(results.expenses.registry)}</span>
+                                  </div>
+                                  <div className="flex justify-between gap-4">
+                                    <span>Gestoría:</span>
+                                    <span>{formatCurrency(results.expenses.agency)}</span>
+                                  </div>
+                                  <div className="flex justify-between gap-4">
+                                    <span>Tasación:</span>
+                                    <span>{formatCurrency(results.expenses.appraisal)}</span>
+                                  </div>
+                                  <div className="border-t pt-1 mt-1 font-bold flex justify-between gap-4">
+                                    <span>Total:</span>
+                                    <span>{formatCurrency(results.expenses.total)}</span>
+                                  </div>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
-                        <span className="font-medium text-slate-900">{formatCurrency(results.expenses)}</span>
+                        <span className="font-medium text-slate-900">{formatCurrency(results.expenses.total)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <div className="flex items-center gap-2">
@@ -306,14 +336,14 @@ export default function MortgageCalculator() {
 
                     {/* Progress Bar Visual */}
                     <div className="mt-6 flex h-4 rounded-full overflow-hidden w-full">
-                       <div className="bg-blue-300 h-full" style={{ width: '17%' }} title="Gastos"></div>
-                       <div className="bg-amber-400 h-full" style={{ width: '53%' }} title="Préstamo"></div>
-                       <div className="bg-red-400 h-full" style={{ width: '30%' }} title="Intereses"></div>
+                       <div className="bg-blue-300 h-full" style={{ width: `${pExpenses}%` }} title="Gastos"></div>
+                       <div className="bg-amber-400 h-full" style={{ width: `${pLoan}%` }} title="Préstamo"></div>
+                       <div className="bg-red-400 h-full" style={{ width: `${pInterest}%` }} title="Intereses"></div>
                     </div>
                     <div className="flex justify-between text-xs font-bold text-white mt-[-1rem] px-2 relative z-10 pointer-events-none">
-                      <span className="drop-shadow-md">17%</span>
-                      <span className="drop-shadow-md">53%</span>
-                      <span className="drop-shadow-md">30%</span>
+                      <span className="drop-shadow-md">{Math.round(pExpenses)}%</span>
+                      <span className="drop-shadow-md">{Math.round(pLoan)}%</span>
+                      <span className="drop-shadow-md">{Math.round(pInterest)}%</span>
                     </div>
 
                     <div className="mt-8">
