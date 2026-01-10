@@ -63,3 +63,4 @@ export function getTaxData(province: string): TaxData {
 }
 
 export const PROVINCES_LIST = Object.keys(PROVINCE_TO_REGION).sort();
+export const PROVINCES = PROVINCES_LIST; // Alias for backward compatibility
