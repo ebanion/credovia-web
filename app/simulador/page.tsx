@@ -1,13 +1,13 @@
 "use client"
 
+import { Suspense, useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import MortgageCalculator from "./_components/MortgageCalculator"
 import MortgageRequestForm from "@/components/mortgage-request-form"
 import { FileText, Calculator } from "lucide-react"
-import { useRouter, useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react"
 
-export default function SimuladorPage() {
+function SimuladorContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tabParam = searchParams.get("tab")
@@ -23,8 +23,6 @@ export default function SimuladorPage() {
 
   const handleTabChange = (val: string) => {
      setActiveTab(val)
-     // Optional: Update URL to reflect state if desired, but not strictly necessary for requirement
-     // router.replace(`/simulador?tab=${val}`)
   }
 
   return (
@@ -64,5 +62,13 @@ export default function SimuladorPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function SimuladorPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center">Cargando...</div>}>
+      <SimuladorContent />
+    </Suspense>
   )
 }
