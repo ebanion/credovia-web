@@ -56,11 +56,13 @@ export default function MortgageRequestForm() {
     holders: 1,
     holder1: {
       contractType: "",
-      monthlyIncome: ""
+      monthlyIncome: "",
+      age: ""
     },
     holder2: {
       contractType: "",
-      monthlyIncome: ""
+      monthlyIncome: "",
+      age: ""
     },
     savings: 50000,
     debt: 0, // Added debt
@@ -163,6 +165,10 @@ export default function MortgageRequestForm() {
     { title: "Valor", description: "¿Cuál es el valor de la vivienda?" },
     { title: "Ubicación", description: "¿Dónde está la vivienda?" },
     { title: "Titulares", description: "¿Cuántas personas solicitan la hipoteca?" },
+    { title: "Edad 1", description: "¿Qué edad tiene el primer titular?" },
+    ...(formData.holders === 2 ? [
+      { title: "Edad 2", description: "¿Qué edad tiene el segundo titular?" }
+    ] : []),
     { title: "Laboral 1", description: "Contrato del primer titular" },
     { title: "Ingresos 1", description: "Ingresos netos mensuales (Titular 1)" },
     ...(formData.holders === 2 ? [
@@ -282,6 +288,32 @@ export default function MortgageRequestForm() {
                   selected={formData.holders === 2}
                   onClick={() => handleSelection("holders", 2)}
                 />
+              </div>
+            )}
+
+            {currentStepData.title === "Edad 1" && (
+              <div className="grid grid-cols-2 gap-3">
+                {["18-25 años", "25-35 años", "35-45 años", "45 años o más"].map((option) => (
+                  <OptionButton 
+                    key={option}
+                    label={option} 
+                    selected={formData.holder1.age === option}
+                    onClick={() => handleHolderSelection("holder1", "age", option)}
+                  />
+                ))}
+              </div>
+            )}
+
+            {currentStepData.title === "Edad 2" && (
+              <div className="grid grid-cols-2 gap-3">
+                {["18-25 años", "25-35 años", "35-45 años", "45 años o más"].map((option) => (
+                  <OptionButton 
+                    key={option}
+                    label={option} 
+                    selected={formData.holder2.age === option}
+                    onClick={() => handleHolderSelection("holder2", "age", option)}
+                  />
+                ))}
               </div>
             )}
 
