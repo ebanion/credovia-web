@@ -11,8 +11,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { PROVINCES, getTaxData, FIXED_FEES } from "@/data/taxes/es"
-import { Calculator } from "lucide-react"
+import { PROVINCES, PROVINCES_LIST } from "@/data/taxes/es"
+import { calculateMortgage } from "@/lib/mortgage-utils"
+import { Calculator, HelpCircle } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 // --- CONSTANTS & DEFAULTS ---
 const DEFAULT_TIN_FIXED = 2.5 // 2.5%
@@ -36,66 +43,37 @@ export function QuotaCalculator() {
 
   // --- CALCULATIONS ---
   const calculation = useMemo(() => {
-    // 1. Taxes & Fees
-    const taxData = getTaxData(province)
-    const fixedFeesTotal = FIXED_FEES.notary + FIXED_FEES.registry + FIXED_FEES.agency + FIXED_FEES.appraisal
-    
-    let taxes = 0
-    if (propertyType === "used") {
-      taxes = (price * taxData.itp) + (price * taxData.ajd)
-    } else {
-      taxes = (price * taxData.iva) + (price * taxData.ajd)
-    }
-    
-    const totalExpenses = taxes + fixedFeesTotal
+    // Fixed Calculation
+    const fixedCalc = calculateMortgage({
+      propertyPrice: price,
+      savings,
+      years,
+      interestRate: tinFixed,
+      province,
+      propertyType,
+      isVariable: false
+    })
 
-    // 2. Finance Needs
-    // Logic: Savings cover expenses first.
-    let downPayment = 0
-    let amountToFinance = 0
+    // Variable Calculation
+    const varCalc = calculateMortgage({
+      propertyPrice: price,
+      savings,
+      years,
+      interestRate: tinVarInitial, // For first year
+      province,
+      propertyType,
+      isVariable: true
+    })
 
-    if (savings >= totalExpenses) {
-      downPayment = savings - totalExpenses
-      amountToFinance = Math.max(0, price - downPayment)
-    } else {
-      // Savings don't even cover expenses fully
-      // Assuming bank finances Price + (Remaining Expenses)
-      // Or user must pay remaining expenses. 
-      // The prompt says: "Importe_a_financiar = Precio_vivienda + (Impuestos_y_gastos - Ahorro)"
-      downPayment = 0
-      amountToFinance = price + (totalExpenses - savings)
-    }
-
-    // 3. Quotas (French Amortization)
-    const calculateQuota = (p: number, rAnn: number, nYears: number) => {
-      if (p <= 0) return 0
-      const r = rAnn / 100 / 12
-      const n = nYears * 12
-      if (r === 0) return p / n
-      return (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1)
-    }
-
-    // Fixed Mortgage
-    const quotaFixed = calculateQuota(amountToFinance, tinFixed, years)
-    const totalInterestsFixed = (quotaFixed * years * 12) - amountToFinance
-
-    // Variable Mortgage
-    // Year 1
-    const quotaVarYear1 = calculateQuota(amountToFinance, tinVarInitial, years)
-    
-    // Rest (Approximation: Recalculate as if the whole loan was at this rate for simplicity in "quota" display, 
-    // or better: calculate strictly based on remaining capital after year 1.
-    // For the UI "Resto: Y €/mes", usually implies the quota *if* euribor stays constant.
-    // Let's use the rate (Euribor + Diff) for the full term to show the "steady state" quota, 
-    // OR calculate remaining capital after year 1 and amortize over n-1 years.
-    // Prompt says: "Resto: Y €/mes (Euríbor + diferencial)". 
-    // Standard simulators often show the quota for the new rate. 
-    // Let's calculate precise remaining capital for accuracy.
+    // Recalculate Rest of Variable (Approx)
+    // We reuse the logic from previous implementation for "Rest" quota
+    // but basing it on the new 'amountToFinance' from util
+    const amountToFinance = fixedCalc.loanAmount
     const r1 = tinVarInitial / 100 / 12
-    const nTotal = years * 12
-    // Capital amortized in year 1
     let capitalPending = amountToFinance
-    // This loop is fast (12 steps)
+    
+    // Amortize first year
+    const quotaVarYear1 = varCalc.monthlyQuota
     if (r1 > 0) {
         for(let i=0; i<12; i++) {
             const interest = capitalPending * r1
@@ -105,29 +83,41 @@ export function QuotaCalculator() {
     } else {
         capitalPending = amountToFinance - (quotaVarYear1 * 12)
     }
-    
+
     const tinVarRest = euribor + differential
-    const quotaVarRest = calculateQuota(capitalPending, tinVarRest, years - 1)
-    
+    const rRest = tinVarRest / 100 / 12
+    const nRest = (years - 1) * 12
+    let quotaVarRest = 0
+    if (rRest === 0) {
+       quotaVarRest = capitalPending / nRest
+    } else {
+       quotaVarRest = (capitalPending * rRest * Math.pow(1 + rRest, nRest)) / (Math.pow(1 + rRest, nRest) - 1)
+    }
+
     // Total Interests Variable (Approx)
     const interestsYear1 = (quotaVarYear1 * 12) - (amountToFinance - capitalPending)
-    const interestsRest = (quotaVarRest * (years - 1) * 12) - capitalPending
+    const interestsRest = (quotaVarRest * nRest) - capitalPending
     const totalInterestsVar = interestsYear1 + interestsRest
 
     return {
-      expenses: totalExpenses,
-      taxes,
-      fixedFeesTotal,
-      downPayment,
-      amountToFinance,
-      quotaFixed,
-      totalInterestsFixed,
+      expenses: fixedCalc.expenses,
+      taxes: fixedCalc.expenses.taxes,
+      fixedFeesTotal: fixedCalc.expenses.total - fixedCalc.expenses.taxes, // Notary+Reg+Agency+Appraisal
+      downPayment: fixedCalc.netDownPayment > 0 ? fixedCalc.netDownPayment : 0, // "Entrada (tras gastos)" usually means what you pay to seller + expenses paid. Wait.
+      // In the previous logic: "Entrada" was displayed as savings - totalExpenses.
+      // In util: netDownPayment = savings - totalExpenses.
+      // Correct.
+      amountToFinance: fixedCalc.loanAmount,
+      quotaFixed: fixedCalc.monthlyQuota,
+      totalInterestsFixed: fixedCalc.totalInterests,
       quotaVarYear1,
       quotaVarRest,
       totalInterestsVar,
-      tinVarRest
+      tinVarRest,
+      taxesRate: fixedCalc.taxesRate
     }
   }, [price, savings, years, propertyType, province, tinFixed, tinVarInitial, euribor, differential])
+
 
   return (
     <div className="grid lg:grid-cols-12 gap-8">
@@ -276,7 +266,20 @@ export function QuotaCalculator() {
                     items={[
                       { label: "Ahorro aportado", amount: savings, color: "bg-blue-200" },
                       { label: "Entrada (tras gastos)", amount: calculation.downPayment, color: "bg-emerald-200" },
-                      { label: "Impuestos y gastos", amount: calculation.expenses, color: "bg-orange-200" },
+                      { 
+                        label: "Impuestos y gastos", 
+                        amount: calculation.expenses.total, 
+                        color: "bg-orange-200",
+                        tooltip: {
+                          taxes: calculation.expenses.taxes,
+                          taxesRate: calculation.taxesRate,
+                          notary: calculation.expenses.notary,
+                          registry: calculation.expenses.registry,
+                          agency: calculation.expenses.agency,
+                          appraisal: calculation.expenses.appraisal,
+                          total: calculation.expenses.total
+                        }
+                      },
                       { label: "Importe a financiar", amount: calculation.amountToFinance, color: "bg-slate-200", bold: true },
                       { label: "Intereses totales", amount: calculation.totalInterestsFixed, color: "bg-red-100" },
                     ]}
@@ -315,7 +318,20 @@ export function QuotaCalculator() {
                     items={[
                       { label: "Ahorro aportado", amount: savings, color: "bg-blue-200" },
                       { label: "Entrada (tras gastos)", amount: calculation.downPayment, color: "bg-emerald-200" },
-                      { label: "Impuestos y gastos", amount: calculation.expenses, color: "bg-orange-200" },
+                      { 
+                        label: "Impuestos y gastos", 
+                        amount: calculation.expenses.total, 
+                        color: "bg-orange-200",
+                        tooltip: {
+                          taxes: calculation.expenses.taxes,
+                          taxesRate: calculation.taxesRate,
+                          notary: calculation.expenses.notary,
+                          registry: calculation.expenses.registry,
+                          agency: calculation.expenses.agency,
+                          appraisal: calculation.expenses.appraisal,
+                          total: calculation.expenses.total
+                        }
+                      },
                       { label: "Importe a financiar", amount: calculation.amountToFinance, color: "bg-slate-200", bold: true },
                       { label: "Intereses totales (est.)", amount: calculation.totalInterestsVar, color: "bg-red-100" },
                     ]}
@@ -351,7 +367,7 @@ export function QuotaCalculator() {
   )
 }
 
-function BreakdownList({ items }: { items: { label: string, amount: number, color?: string, bold?: boolean }[] }) {
+function BreakdownList({ items }: { items: { label: string, amount: number, color?: string, bold?: boolean, tooltip?: any }[] }) {
   return (
     <div className="space-y-3">
       {items.map((item, idx) => (
@@ -359,6 +375,44 @@ function BreakdownList({ items }: { items: { label: string, amount: number, colo
           <div className="flex items-center gap-3">
             {item.color && <div className={`w-3 h-3 rounded-full ${item.color}`} />}
             <span className="text-slate-600">{item.label}</span>
+            {item.tooltip && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="w-3 h-3 text-slate-400" />
+                  </TooltipTrigger>
+                  <TooltipContent className="p-4 max-w-xs bg-white text-slate-800 border shadow-xl z-50">
+                    <p className="font-bold mb-2">Desglose de gastos:</p>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between gap-4">
+                        <span>Impuestos ({item.tooltip.taxesRate}%):</span>
+                        <span>{item.tooltip.taxes.toLocaleString("es-ES", { maximumFractionDigits: 0 })} €</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Notaría:</span>
+                        <span>{item.tooltip.notary.toLocaleString("es-ES", { maximumFractionDigits: 0 })} €</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Registro:</span>
+                        <span>{item.tooltip.registry.toLocaleString("es-ES", { maximumFractionDigits: 0 })} €</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Gestoría:</span>
+                        <span>{item.tooltip.agency.toLocaleString("es-ES", { maximumFractionDigits: 0 })} €</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Tasación:</span>
+                        <span>{item.tooltip.appraisal.toLocaleString("es-ES", { maximumFractionDigits: 0 })} €</span>
+                      </div>
+                      <div className="border-t pt-1 mt-1 font-bold flex justify-between gap-4">
+                        <span>Total:</span>
+                        <span>{item.tooltip.total.toLocaleString("es-ES", { maximumFractionDigits: 0 })} €</span>
+                      </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
           </div>
           <span className={`font-medium ${item.bold ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>
             {item.amount.toLocaleString("es-ES", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} €
